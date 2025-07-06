@@ -42,7 +42,7 @@ const ProductSchema = new Schema({
 
   promoText: {
     type: String,
-    maxlength: [300, 'Promo text cannot exceed 300 characters']
+    required: true
   },
 
   userId: {
@@ -66,7 +66,32 @@ const ProductSchema = new Schema({
   },
   telegramGroups: [{
     type: String
-  }]
+  }],
+  subreddit: {
+    type: String,
+    default: 'r/startups'
+  },
+  views: {
+    type: Number,
+    default: 0
+  },
+  upvotes: {
+    type: Number,
+    default: 0
+  },
+  comments: {
+    type: Number,
+    default: 0
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'posted', 'failed'],
+    default: 'pending'
+  },
+  redditUrl: {
+    type: String,
+    default: null
+  }
 });
 
 ProductSchema.pre('save', function(next) {

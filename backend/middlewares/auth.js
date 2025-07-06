@@ -6,7 +6,7 @@ const authenticate = (req, res, next) => {
 
   try {
     const decoded = verifyToken(token);
-    req.userId = decoded.id;
+    req.user = { id: decoded.id };
     next();
   } catch (err) {
     res.status(401).json({ error: "Invalid token" });

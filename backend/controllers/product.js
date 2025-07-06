@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const { User } = require('../models/User');
 const { generatePromo } = require('../services/ai');
 const { postToReddit } = require('../services/reddit');
 
@@ -9,11 +10,6 @@ const submitProduct = async (req, res) => {
 
     if (!categories || categories.length === 0) {
       return res.status(400).json({ error: "At least one category is required" });
-    }
-
-    const user = await User.findById(userId);
-    if (!user.redditRefreshToken) {
-      return res.status(403).json({ error: "User has not connected Reddit account" });
     }
 
     const promoText = await generatePromo({ 
@@ -32,13 +28,44 @@ const submitProduct = async (req, res) => {
       promoText
     });
 
+    res.json({ 
+      success: true, 
+      product,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const promoteProduct = async (req, res) => {
+  try {
+    const { productId, categories } = req.body;
+    const userId = req.userId;
+
+    const user = await User.findById(userId);
+    if (!user.redditRefreshToken) {
+      return res.status(403).json({ error: "User has not connected Reddit account" });
+    }
+
+    // Get the product (either by ID or the latest one)
+    let product;
+    if (productId === 'latest') {
+      product = await Product.findOne({ userId }).sort({ createdAt: -1 });
+    } else {
+      product = await Product.findById(productId);
+    }
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
     const postResults = await postToReddit(
       {
-        title: `${name} - ${description.substring(0, 50)}...`,
-        url,
-        description: promoText
+        title: `${product.name} - ${product.description.substring(0, 50)}...`,
+        url: product.url,
+        description: product.promoText
       },
-      categories,
+      categories || product.categories,
       user.redditRefreshToken
     );
 
@@ -55,7 +82,6 @@ const submitProduct = async (req, res) => {
 
     res.json({ 
       success: true, 
-      product,
       postResults
     });
   } catch (err) {
@@ -63,4 +89,4 @@ const submitProduct = async (req, res) => {
   }
 };
 
-module.exports = { submitProduct };
+module.exports = { submitProduct, promoteProduct };

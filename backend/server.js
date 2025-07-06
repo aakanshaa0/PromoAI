@@ -4,6 +4,7 @@ const { connect } = require('mongoose');
 const cors = require('cors');
 const authRoutes = require('./routes/auth.js');
 const productRoutes = require('./routes/product.js');
+const dashboardRoutes = require('./routes/dashboard.js');
 
 const connectToDB = async () => {
   try{
@@ -23,6 +24,7 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

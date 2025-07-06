@@ -1,7 +1,19 @@
 const snoowrap = require('snoowrap');
 const snoostorm = require('snoostorm');
 
-// Reddit API credentials
+// Domain validation - only allow trusted domains
+const ALLOWED_DOMAINS = [
+  'github.com', 'producthunt.com', 'indiehackers.com', 'dev.to',
+  'medium.com', 'hashnode.dev', 'substack.com', 'notion.so',
+  'figma.com', 'canva.com', 'notion.so', 'airtable.com'
+];
+
+//Posting limits based on user type
+const POST_LIMITS = {
+  newUsers: 1,
+  verifiedUsers: 3
+};
+
 const reddit = new snoowrap({
   userAgent: process.env.REDDIT_USER_AGENT,
   clientId: process.env.REDDIT_CLIENT_ID,
@@ -9,7 +21,6 @@ const reddit = new snoowrap({
   refreshToken: process.env.REDDIT_REFRESH_TOKEN
 });
 
-// Subreddit database categorized by topics
 const SUBREDDIT_DB = {
   tech: [
     'technology',
@@ -46,15 +57,51 @@ const SUBREDDIT_DB = {
     'FIRE'
   ],
   other: [
-    'promote',
-    'shamelessplug',
-    'SomethingIMade'
+    'SideProject',
+    'Entrepreneur',
+    'startups',
+    'smallbusiness',
+    'webdev',
+    'programming'
   ]
 };
 
-// Post to relevant subreddits
+const validateDomain = (url) => {
+  try {
+    const domain = new URL(url).hostname.replace('www.', '');
+    return ALLOWED_DOMAINS.some(allowed => domain.includes(allowed));
+  } catch (err) {
+    return false;
+  }
+};
+
+const checkPostingLimits = async (userRefreshToken) => {
+  return true;
+};
+
 exports.postToReddit = async (content, categories = ['other'], userRefreshToken) => {
-  // Initialize user-specific client
+  if (!validateDomain(content.url)) {
+    return {
+      success: false,
+      results: [{
+        subreddit: 'all',
+        status: 'failed',
+        error: 'Domain not allowed by Reddit. Try using GitHub, ProductHunt, or other trusted platforms.'
+      }]
+    };
+  }
+
+  if (!await checkPostingLimits(userRefreshToken)) {
+    return {
+      success: false,
+      results: [{
+        subreddit: 'all',
+        status: 'failed',
+        error: 'Posting limit reached. Try again in an hour.'
+      }]
+    };
+  }
+
   const userClient = new snoowrap({
     userAgent: process.env.REDDIT_USER_AGENT,
     clientId: process.env.REDDIT_CLIENT_ID,
@@ -62,32 +109,63 @@ exports.postToReddit = async (content, categories = ['other'], userRefreshToken)
     refreshToken: userRefreshToken
   });
 
-  // Get unique subreddits from all categories
   const subreddits = [...new Set(
     categories.flatMap(cat => SUBREDDIT_DB[cat] || [])
   )];
 
+  //Limit to max 3 subreddits to speed up posting
+  const subredditsToPost = subreddits.slice(0, 3);
+
   const results = [];
+  let successCount = 0;
+  let failureCount = 0;
   
-  for (const subreddit of subreddits) {
+  for (const subreddit of subredditsToPost) {
     try {
-      // Check if the user is subscribed to the subreddit (many subreddits require this)
+      //First, verify the subreddit exists and is accessible
+      let subredditInfo;
+      try {
+        subredditInfo = await userClient.getSubreddit(subreddit).fetch();
+      } catch (fetchErr) {
+        results.push({
+          subreddit,
+          status: 'failed',
+          error: 'Subreddit does not exist or is not accessible'
+        });
+        continue;
+      }
+
+      //Check if subreddit allows submissions
+      if (subredditInfo.subreddit_type === 'private' || subredditInfo.subreddit_type === 'restricted') {
+        results.push({
+          subreddit,
+          status: 'failed',
+          error: 'Subreddit is private or restricted'
+        });
+        continue;
+      }
+
+      //Check if the user is subscribed to the subreddit (many subreddits require this)
       const isSubscribed = await userClient.getSubreddit(subreddit).getMySubscription()
         .then(() => true)
         .catch(() => false);
 
       if (!isSubscribed) {
-        results.push({
-          subreddit,
-          status: 'failed',
-          error: 'Not subscribed to subreddit'
-        });
-        continue;
+        //Automatically subscribe to the subreddit
+        try {
+          await userClient.getSubreddit(subreddit).subscribe();
+          console.log(`Subscribed to r/${subreddit}`);
+        } catch (subscribeErr) {
+          console.log(`Failed to subscribe to r/${subreddit}:`, subscribeErr.message);
+          results.push({
+            subreddit,
+            status: 'failed',
+            error: 'Could not subscribe to subreddit'
+          });
+          continue;
+        }
       }
 
-      // Check subreddit rules and posting requirements
-      const subredditInfo = await userClient.getSubreddit(subreddit).fetch();
-      
       // Create the submission
       const submission = await userClient.getSubreddit(subreddit).submitLink({
         title: content.title,
@@ -101,16 +179,34 @@ exports.postToReddit = async (content, categories = ['other'], userRefreshToken)
         submissionId: submission.id,
         submissionUrl: submission.url
       });
+      successCount++;
 
-      // Rate limiting - be polite to Reddit's API
-      await new Promise(resolve => setTimeout(resolve, 60000)); // 1 minute between posts
+      // Rate limiting
+      await new Promise(resolve => setTimeout(resolve, 5000));
 
     } catch (err) {
+      let errorMessage = err.message;
+      
+      //Handle common Reddit filtering issues
+      if (err.message.includes('removed by Reddit') || err.message.includes('filtered')) {
+        errorMessage = 'Post was filtered by Reddit (try posting manually first)';
+      } else if (err.message.includes('rate limit') || err.message.includes('too many')) {
+        errorMessage = 'Rate limited by Reddit (try again later)';
+      } else if (err.message.includes('forbidden') || err.message.includes('not allowed')) {
+        errorMessage = 'Subreddit does not allow this type of post';
+      }
+      
       results.push({
         subreddit,
         status: 'failed',
-        error: err.message
+        error: errorMessage
       });
+      failureCount++;
+      
+      //If we have had 2 failures in a row, stop trying to avoid wasting time
+      if (failureCount >= 2 && successCount === 0) {
+        break;
+      }
     }
   }
 
@@ -120,7 +216,7 @@ exports.postToReddit = async (content, categories = ['other'], userRefreshToken)
   };
 };
 
-// Get OAuth URL for user authorization
+//Get OAuth URL for user authorization
 exports.getAuthUrl = () => {
   const scopes = ['identity', 'submit', 'subscribe', 'read'];
   const redirectUri = process.env.REDDIT_REDIRECT_URI;
@@ -128,17 +224,18 @@ exports.getAuthUrl = () => {
   return `https://www.reddit.com/api/v1/authorize?client_id=${process.env.REDDIT_CLIENT_ID}&response_type=code&state=random_state&redirect_uri=${redirectUri}&duration=permanent&scope=${scopes.join(' ')}`;
 };
 
-// Exchange code for tokens
+//Exchange code for tokens
 exports.getTokensFromCode = async (code) => {
-  const r = new snoowrap({
+  const r = await snoowrap.fromAuthCode({
+    code,
     userAgent: process.env.REDDIT_USER_AGENT,
     clientId: process.env.REDDIT_CLIENT_ID,
     clientSecret: process.env.REDDIT_CLIENT_SECRET,
+    redirectUri: process.env.REDDIT_REDIRECT_URI
   });
-
-  return r.auth({
-    code,
-    redirectUri: process.env.REDDIT_REDIRECT_URI,
-    grantType: 'authorization_code'
-  });
+  return {
+    accessToken: r.accessToken,
+    refreshToken: r.refreshToken,
+    snoowrapInstance: r
+  };
 };
