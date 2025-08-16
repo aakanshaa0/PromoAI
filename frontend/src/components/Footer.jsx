@@ -77,7 +77,7 @@ export default function Footer() {
               <GitHubIcon />
             </IconButton>
             <IconButton 
-              href="mailto:contact@promoai.com" 
+              href="https://mail.google.com/mail/u/3/#inbox?compose=CllgCJlKFhMfRnGwgNNPzgVPtgqmSJRcqHHFhSrLkwRXcGVffDQjqczgVZpKVKgSZXjgbQzsrHL" 
               target="_blank" 
               rel="noopener" 
               sx={{

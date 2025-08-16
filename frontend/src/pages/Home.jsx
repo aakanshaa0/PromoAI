@@ -5,12 +5,9 @@ import heroImage from '../assets/hero-image.png'
 
 import Chip from '@mui/material/Chip'
 import { useState, useEffect } from 'react'
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import Avatar from '@mui/material/Avatar'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import StarIcon from '@mui/icons-material/Star'
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import { useTheme, useMediaQuery } from '@mui/material'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -398,10 +395,7 @@ export default function Home() {
             </Box>
             <Box sx={{ mt: 6, width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', minHeight: 380 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 'auto', gap: 2 }}>
-                <IconButton sx={{ bgcolor: 'background.paper', boxShadow: 2, width: 48, height: 48, mr: { xs: 1, md: 3 }, '&:hover': { bgcolor: 'background.paper' } }}>
-                  <ArrowBackIosNewIcon sx={{ color: '#FF5700' }} />
-                </IconButton>
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 4 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 4, flexDirection: { xs: 'column', md: 'row' } }}>
                   <Box sx={{ width: 370, height: 380, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
                     <Box sx={{
                       position: 'absolute',
@@ -549,9 +543,6 @@ export default function Home() {
                     </Paper>
                   </Box>
                 </Box>
-                <IconButton sx={{ bgcolor: 'background.paper', boxShadow: 2, width: 48, height: 48, ml: { xs: 1, md: 3 }, '&:hover': { bgcolor: 'background.paper' } }}>
-                  <ArrowForwardIosIcon sx={{ color: '#FF5700' }} />
-                </IconButton>
               </Box>
             </Box>
             <Box sx={{ textAlign: 'center', mt: { xs: 4, md: 8 } }}>
