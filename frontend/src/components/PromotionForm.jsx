@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   TextField,
   Button,
@@ -22,11 +22,36 @@ export default function PromotionForm({ onSubmit, isSubmitting }) {
     name: '',
     description: '',
     url: '',
+    contact: '',
     categories: [],
   })
+  const [errors, setErrors] = useState({})
+
+  const isValidUrl = (value) => {
+    try {
+      if (value.startsWith('http://') || value.startsWith('https://')) {
+        new URL(value)
+        return true
+      }
+      return /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(\/[^\s]*)?$/.test(value)
+    } catch {
+      return false
+    }
+  }
+
+  useEffect(() => {
+    const newErrors = {}
+    if (!product.name.trim()) newErrors.name = 'Product name is required.'
+    if (!product.description.trim()) newErrors.description = 'Description is required.'
+    if (!product.url.trim()) newErrors.url = 'Product URL is required.'
+    else if (!isValidUrl(product.url.trim())) newErrors.url = 'Enter a valid URL (e.g. https://example.com or example.com/path)'
+    if (product.categories.length === 0) newErrors.categories = 'Select at least one category.'
+    setErrors(newErrors)
+  }, [product])
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    if (Object.keys(errors).length > 0) return
     onSubmit(product)
   }
 
@@ -71,6 +96,8 @@ export default function PromotionForm({ onSubmit, isSubmitting }) {
             required
             value={product.name}
             onChange={(e) => setProduct({ ...product, name: e.target.value })}
+            error={!!errors.name}
+            helperText={errors.name}
             sx={{
               background: '#0A0A0A',
               borderRadius: '8px',
@@ -110,10 +137,52 @@ export default function PromotionForm({ onSubmit, isSubmitting }) {
             required
             value={product.description}
             onChange={(e) => setProduct({ ...product, description: e.target.value })}
+            error={!!errors.description}
+            helperText={errors.description}
             sx={{
               background: '#0A0A0A',
               borderRadius: '8px',
               textarea: { 
+                color: '#FFFFFF', 
+                fontWeight: 500,
+                textShadow: '0 0 3px #FFFFFF'
+              },
+              label: { 
+                color: '#00FFFF',
+                textShadow: '0 0 5px #00FFFF'
+              },
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { 
+                  borderColor: 'rgba(0,255,255,0.3)',
+                  borderWidth: '2px'
+                },
+                '&:hover fieldset': { 
+                  borderColor: '#00FFFF',
+                  boxShadow: '0 0 10px rgba(0,255,255,0.3)'
+                },
+                '&.MMui-focused fieldset': { 
+                  borderColor: '#00FFFF',
+                  boxShadow: '0 0 15px rgba(0,255,255,0.5)'
+                },
+              },
+            }}
+            InputLabelProps={{ style: { color: '#00FFFF', fontWeight: 600 } }}
+          />
+
+          <TextField
+            label="Product URL"
+            type="text"
+            variant="outlined"
+            fullWidth
+            required
+            value={product.url}
+            onChange={(e) => setProduct({ ...product, url: e.target.value })}
+            error={!!errors.url}
+            helperText={errors.url || 'Enter a valid link to your product, blog, or landing page.'}
+            sx={{
+              background: '#0A0A0A',
+              borderRadius: '8px',
+              input: { 
                 color: '#FFFFFF', 
                 fontWeight: 500,
                 textShadow: '0 0 3px #FFFFFF'
@@ -141,13 +210,13 @@ export default function PromotionForm({ onSubmit, isSubmitting }) {
           />
 
           <TextField
-            label="Product URL"
-            type="url"
+            label="Contact Information (Email, Twitter, etc.)"
             variant="outlined"
             fullWidth
-            required
-            value={product.url}
-            onChange={(e) => setProduct({ ...product, url: e.target.value })}
+            value={product.contact}
+            onChange={(e) => setProduct({ ...product, contact: e.target.value })}
+            placeholder="your@email.com or @yourtwitter"
+            helperText="Optional. Provide an email or social handle for people to contact you."
             sx={{
               background: '#0A0A0A',
               borderRadius: '8px',
@@ -186,6 +255,9 @@ export default function PromotionForm({ onSubmit, isSubmitting }) {
             }}>
               Select Categories (1-3)
             </Typography>
+            {errors.categories && (
+              <Typography color="error" sx={{ fontWeight: 600, mb: 1 }}>{errors.categories}</Typography>
+            )}
             <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
               {categories.map((cat) => (
                 <Chip
@@ -243,12 +315,23 @@ export default function PromotionForm({ onSubmit, isSubmitting }) {
             }
           }} />
 
+          <Typography variant="body2" sx={{ 
+            color: '#00FFFF', 
+            textAlign: 'center',
+            fontStyle: 'italic'
+          }}>
+            We'll generate promotional content for Reddit, Twitter, LinkedIn, Instagram, and Email marketing
+          </Typography>
+
           <Button
             type="submit"
             variant="contained"
             size="large"
             endIcon={isSubmitting ? <CircularProgress size={24} sx={{ color: '#00FFFF' }} /> : <Send sx={{ color: '#00FFFF' }} />}
-            disabled={isSubmitting || product.categories.length === 0}
+            disabled={
+              isSubmitting ||
+              Object.keys(errors).length > 0
+            }
             sx={{
               alignSelf: 'flex-end',
               px: 4,
@@ -278,7 +361,7 @@ export default function PromotionForm({ onSubmit, isSubmitting }) {
               }
             }}
           >
-            {isSubmitting ? 'Generating...' : 'Generate Post'}
+            {isSubmitting ? 'Generating Content...' : 'Generate Content Pack'}
           </Button>
         </Stack>
       </form>

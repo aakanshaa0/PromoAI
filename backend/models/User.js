@@ -10,12 +10,6 @@ const UserSchema = new Schema({
   password: { 
     type: String, 
     required: true 
-  },
-  redditRefreshToken: {
-    type: String
-  },
-  redditUsername: {
-    type: String
   }
 }, { timestamps: true });
 

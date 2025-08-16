@@ -17,10 +17,24 @@ const ProductSchema = new Schema({
     required: [true, 'URL is required'],
     validate: {
       validator: function(v) {
-        return /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(v);
+        try {
+          if (v.startsWith('http://') || v.startsWith('https://')) {
+            new URL(v);
+            return true;
+          }
+          return /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*(\/[^\s]*)?$/.test(v);
+        } catch (err) {
+          return false;
+        }
       },
       message: props => `${props.value} is not a valid URL!`
     }
+  },
+
+  contact: {
+    type: String,
+    trim: true,
+    maxlength: [100, 'Contact information cannot exceed 100 characters']
   },
 
   categories: {
@@ -33,16 +47,26 @@ const ProductSchema = new Schema({
       message: 'Select 1-3 categories'
     },
     enum: {
-      values: ['tech', 'beauty', 'health', 'finance', 'other'],
+      values: ['tech', 'startup', 'cybersecurity', 'finance', 'health', 'beauty', 'gaming', 'education', 'travel', 'food', 'fashion', 'sports', 'music', 'art', 'science', 'books', 'movies', 'pets', 'home', 'other'],
       message: '{VALUE} is not a supported category'
     },
     default: ['other']
   },
 
-
-  promoText: {
-    type: String,
-    required: true
+  multiPlatformContent: {
+    reddit: {
+      title: String,
+      post: String
+    },
+    twitter: {
+      thread: [String]
+    },
+    linkedin: String,
+    instagram: String,
+    email: {
+      subject: String,
+      body: String
+    }
   },
 
   userId: {
@@ -58,39 +82,6 @@ const ProductSchema = new Schema({
   updatedAt: {
     type: Date,
     default: Date.now
-  },
-
-  postedToTelegram: {
-    type: Boolean,
-    default: false
-  },
-  telegramGroups: [{
-    type: String
-  }],
-  subreddit: {
-    type: String,
-    default: 'r/startups'
-  },
-  views: {
-    type: Number,
-    default: 0
-  },
-  upvotes: {
-    type: Number,
-    default: 0
-  },
-  comments: {
-    type: Number,
-    default: 0
-  },
-  status: {
-    type: String,
-    enum: ['pending', 'posted', 'failed'],
-    default: 'pending'
-  },
-  redditUrl: {
-    type: String,
-    default: null
   }
 });
 
@@ -102,7 +93,7 @@ ProductSchema.pre('save', function(next) {
 ProductSchema.index({
   name: 'text',
   description: 'text',
-  category: 'text'
+  categories: 'text'
 });
 
 const Product = model('Product', ProductSchema);

@@ -1,9 +1,10 @@
 import { Box, Typography, Container, Stack, IconButton } from '@mui/material'
-import RedditIcon from '@mui/icons-material/Reddit'
-import TwitterIcon from '@mui/icons-material/Twitter'
+
+
 import LinkedInIcon from '@mui/icons-material/LinkedIn'
 import GitHubIcon from '@mui/icons-material/GitHub'
 import FavoriteIcon from '@mui/icons-material/Favorite'
+import EmailIcon from '@mui/icons-material/Email'
 
 export default function Footer() {
   return (
@@ -39,40 +40,8 @@ export default function Footer() {
           sx={{ flexWrap: 'wrap', gap: 4 }}
         >
           <Stack direction="row" spacing={1}>
-            <IconButton 
-              href="https://reddit.com" 
-              target="_blank" 
-              rel="noopener" 
-              sx={{
-                color: '#FFFFFF',
-                border: '1px solid rgba(255,255,255,0.3)',
-                '&:hover': {
-                  background: 'rgba(255,255,255,0.1)',
-                  border: '1px solid rgba(255,255,255,0.8)',
-                  boxShadow: '0 0 15px rgba(255,255,255,0.5)',
-                  color: '#FFFFFF',
-                }
-              }}
-            >
-              <RedditIcon />
-            </IconButton>
-            <IconButton 
-              href="https://twitter.com" 
-              target="_blank" 
-              rel="noopener" 
-              sx={{
-                color: '#FFFFFF',
-                border: '1px solid rgba(255,255,255,0.3)',
-                '&:hover': {
-                  background: 'rgba(255,255,255,0.1)',
-                  border: '1px solid rgba(255,255,255,0.8)',
-                  boxShadow: '0 0 15px rgba(255,255,255,0.5)',
-                  color: '#FFFFFF',
-                }
-              }}
-            >
-              <TwitterIcon />
-            </IconButton>
+
+
             <IconButton 
               href="https://linkedin.com" 
               target="_blank" 
@@ -106,6 +75,23 @@ export default function Footer() {
               }}
             >
               <GitHubIcon />
+            </IconButton>
+            <IconButton 
+              href="mailto:contact@promoai.com" 
+              target="_blank" 
+              rel="noopener" 
+              sx={{
+                color: '#FFFFFF',
+                border: '1px solid rgba(255,255,255,0.3)',
+                '&:hover': {
+                  background: 'rgba(255,255,255,0.1)',
+                  border: '1px solid rgba(255,255,255,0.8)',
+                  boxShadow: '0 0 15px rgba(255,255,255,0.5)',
+                  color: '#FFFFFF',
+                }
+              }}
+            >
+              <EmailIcon />
             </IconButton>
           </Stack>
 

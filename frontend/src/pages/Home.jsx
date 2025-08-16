@@ -2,7 +2,7 @@ import { Box, Button, Container, Grid, Typography, Paper, Fade, Divider, IconBut
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import heroImage from '../assets/hero-image.png'
-import RedditIcon from '@mui/icons-material/Reddit'
+
 import Chip from '@mui/material/Chip'
 import { useState, useEffect } from 'react'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
@@ -30,7 +30,6 @@ export default function Home() {
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: (theme) => theme.palette.background.default }}>
       <Navbar />
       <Container maxWidth="lg" sx={{ py: 8, flex: 1 }}>
-        {/* Hero Section */}
         <Box sx={{
           minHeight: '100vh',
           position: 'relative',
@@ -40,7 +39,6 @@ export default function Home() {
           <Container maxWidth="lg">
             <Fade in={showHero} timeout={900}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexDirection: { xs: 'column-reverse', md: 'row' }, minHeight: { xs: '60vh', md: '70vh' }, gap: { xs: 4, md: 8 } }}>
-                {/*Left Side of Hero Section*/}
                 <Box sx={{ 
                   flex: { xs: '1', md: '0 0 45%' }, 
                   display: 'flex', 
@@ -56,22 +54,22 @@ export default function Home() {
                     lineHeight: 1.1,
                     color: '#FFFFFF'
                   }}>
-                    Let AI Promote For You<br />
+                    Let AI Promote For you<br />
                     <Box component="span" sx={{ 
                       color: '#00FFFF'
-                    }}>Using PromoAI</Box>
-            </Typography>
+                    }}>using PromoAI</Box>
+                  </Typography>
                   <Typography variant="h5" sx={{ 
                     mb: 4, 
                     color: '#00FFFF', 
                     fontSize: { xs: '1.05rem', md: '1.2rem' }
                   }}>
-                  Smart promotion that works so you don't have to.
-            </Typography>
-            <Button
-              variant="contained"
-              size="large"
-              sx={{
+                    Create engaging promotional content for Reddit, Twitter, LinkedIn, Instagram, and Email in seconds.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    sx={{
                       px: 5,
                       py: 1.5,
                       fontSize: '1.25rem',
@@ -89,19 +87,18 @@ export default function Home() {
                         background: 'linear-gradient(45deg, #0080FF, #00FFFF)',
                       },
                     }}
-                  onClick={() => {
-                    if (isLoggedIn) {
-                      navigate('/promote')
-                    } else {
-                      setModalOpen(true)
-                    }
-                  }}
+                    onClick={() => {
+                      if (isLoggedIn) {
+                        navigate('/promote')
+                      } else {
+                        setModalOpen(true)
+                      }
+                    }}
                   >
-                    Promote 
-            </Button>
+                    Generate Content
+                  </Button>
                 </Box>
 
-                {/*Right Side of Hero Section*/}
                 <Box sx={{ 
                   flex: { xs: '1', md: '0 0 55%' }, 
                   display: 'flex', 
@@ -111,7 +108,6 @@ export default function Home() {
                   minHeight: { xs: 240, md: 320 },
                   zIndex: 1
                 }}>
-                  {/*Background Effects*/}
                   <Box sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1 }}>
                     <Box component="svg" sx={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, filter: 'blur(64px)', opacity: 0.7 }} viewBox="0 0 444 536" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M225.919 112.719C343.98 64.6648 389.388 -70.487 437.442 47.574C485.496 165.635 253.266 481.381 135.205 529.435C17.1445 577.488 57.9596 339.654 9.9057 221.593C-38.1482 103.532 107.858 160.773 225.919 112.719Z" fill="url(#c_orange)" />
@@ -127,7 +123,6 @@ export default function Home() {
                     <Box component="img" src="https://landingfoliocom.imgix.net/store/collection/dusk/images/noise.png" alt="noise" sx={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.5 }} />
                   </Box>
                   
-                  {/*Hero Image*/}
                   <Box sx={{ position: 'relative', zIndex: 3, width: { xs: '100%', md: '90%' }, maxWidth: { xs: 320, md: 400 }, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <Box component="img" src={heroImage} alt="hero" sx={{ 
                       width: '100%', 
@@ -150,9 +145,8 @@ export default function Home() {
           </Box>
         </Box>
 
-        {/*How It Works Section*/}
         {theme.palette.mode === 'dark' && (
-          <Container maxWidth="lg" sx={{ py: { xs: 6, md: 8 } }}>
+          <Container maxWidth="lg" sx={{ py: { xs: 6, md: 8 } }} id="how-it-works">
             <Typography variant="h4" align="center" gutterBottom sx={{ 
               fontWeight: 800, 
               fontSize: { xs: '2.1rem', md: '2.5rem' }, 
@@ -222,7 +216,7 @@ export default function Home() {
                     fontSize: '1.13rem', 
                     mb: 1
                   }}>
-                    Connect your Reddit account
+                    Describe your product or service
                   </Typography>
                   <Typography sx={{ 
                     color: '#00FFFF', 
@@ -230,7 +224,7 @@ export default function Home() {
                     fontSize: '1.01rem', 
                     lineHeight: 1.5
                   }}>
-                    Securely sign in with Reddit to let PromoAI access your profile for posting.
+                    Enter your product details, target audience, and categories. Our AI will understand your needs.
                   </Typography>
                 </Paper>
               </Box>
@@ -277,10 +271,10 @@ export default function Home() {
                     boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
                   }}>2</Box>
                   <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: '1.13rem', mb: 1 }}>
-                    Describe your product or service
+                    AI generates platform-optimized content
                   </Typography>
                   <Typography sx={{ color: '#bdbdbd', fontWeight: 400, fontSize: '1.01rem', lineHeight: 1.5 }}>
-                    Enter your product details and target audience. PromoAI's AI will craft the perfect promotional post.
+                    Our AI creates engaging content tailored for Reddit, Twitter, LinkedIn, Instagram, and Email marketing.
                   </Typography>
                 </Paper>
               </Box>
@@ -338,7 +332,7 @@ export default function Home() {
                     fontSize: '1.13rem', 
                     mb: 1
                   }}>
-                    AI finds the best subreddits & posts for you
+                    Copy and paste to your platforms
                   </Typography>
                   <Typography sx={{ 
                     color: '#00FFFF', 
@@ -346,7 +340,7 @@ export default function Home() {
                     fontSize: '1.01rem', 
                     lineHeight: 1.5
                   }}>
-                    PromoAI automatically selects relevant subreddits and posts your promotion at the optimal time.
+                    Copy the generated content and paste it directly to your chosen platforms. No automation, just great content.
                   </Typography>
                 </Paper>
               </Box>
@@ -354,78 +348,52 @@ export default function Home() {
           </Container>
         )}
 
-        {/*Supported Subreddits Section*/}
-        <Box sx={{ py: 8, display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ py: 8, display: 'flex', justifyContent: 'center' }} id="platforms">
           <Container maxWidth="md">
             <Typography variant="h4" align="center" gutterBottom sx={{ 
               color: '#00FF00',
               fontWeight: 700
             }}>
-              Works with 50+ Subreddits
-          </Typography>
+              Supported Platforms
+            </Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center', alignItems: 'center', mt: 3 }}>
               <Chip 
-                label="r/startups" 
+                label="Reddit" 
                 variant="outlined" 
-                icon={<RedditIcon color="primary" />}
                 sx={{ fontWeight: 600, fontSize: '1.1rem', px: 2 }}
               />
               <Chip 
-                label="r/SideProject" 
+                label="Twitter/X" 
                 variant="outlined" 
-                icon={<RedditIcon color="primary" />}
                 sx={{ fontWeight: 600, fontSize: '1.1rem', px: 2 }}
               />
               <Chip 
-                label="r/indiebiz" 
+                label="LinkedIn" 
                 variant="outlined" 
-                icon={<RedditIcon color="primary" />}
                 sx={{ fontWeight: 600, fontSize: '1.1rem', px: 2 }}
               />
               <Chip 
-                label="r/Entrepreneur" 
+                label="Instagram" 
                 variant="outlined" 
-                icon={<RedditIcon color="primary" />}
                 sx={{ fontWeight: 600, fontSize: '1.1rem', px: 2 }}
               />
               <Chip 
-                label="r/marketing" 
+                label="Email Marketing" 
                 variant="outlined" 
-                icon={<RedditIcon color="primary" />}
                 sx={{ fontWeight: 600, fontSize: '1.1rem', px: 2 }}
               />
-              <Chip 
-                label="r/SaaS" 
-                variant="outlined" 
-                icon={<RedditIcon color="primary" />}
-                sx={{ fontWeight: 600, fontSize: '1.1rem', px: 2 }}
-              />
-              <Chip 
-                label="r/smallbusiness" 
-                variant="outlined" 
-                icon={<RedditIcon color="primary" />}
-                sx={{ fontWeight: 600, fontSize: '1.1rem', px: 2 }}
-              />
-              <Chip 
-                label="r/ProductHunt" 
-                variant="outlined" 
-                icon={<RedditIcon color="primary" />}
-                sx={{ fontWeight: 600, fontSize: '1.1rem', px: 2 }}
-              />
-              <Chip label="Many more" icon={<MoreHorizIcon color="primary" />} variant="outlined" sx={{ fontWeight: 600, fontSize: '1.1rem', px: 2 }} />
             </Box>
           </Container>
         </Box>
 
-        {/*Testimonials Section*/}
-        <Box sx={{ py: { xs: 6, md: 10 }, bgcolor: 'background.default', position: 'relative', overflow: 'hidden' }}>
+        <Box sx={{ py: { xs: 6, md: 10 }, bgcolor: 'background.default', position: 'relative', overflow: 'hidden' }} id="testimonials">
           <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
             <Box sx={{ textAlign: 'center', mb: 4 }}>
               <Typography variant="subtitle1" sx={{ color: 'text.secondary', fontWeight: 500, fontSize: '1.15rem' }}>
-                2,157 people have said how good PromoAI is
+                Join thousands of creators using PromoAI
               </Typography>
               <Typography variant="h3" sx={{ mt: 2, fontWeight: 800, color: 'text.primary', fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' } }}>
-                Our happy clients say about us
+                What our users say
               </Typography>
             </Box>
             <Box sx={{ mt: 6, width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', minHeight: 380 }}>
@@ -434,7 +402,6 @@ export default function Home() {
                   <ArrowBackIosNewIcon sx={{ color: '#FF5700' }} />
                 </IconButton>
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 4 }}>
-                  {/*Testimonial 1*/}
                   <Box sx={{ width: 370, height: 380, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
                     <Box sx={{
                       position: 'absolute',
@@ -472,18 +439,18 @@ export default function Home() {
                         <StarIcon sx={{ color: '#FDB241', fontSize: 22 }} />
                       </Box>
                       <Typography sx={{ mt: 2, fontSize: '1.08rem', color: '#181A20', fontWeight: 500, lineHeight: 1.6 }}>
-                        “You made it so simple. My new site is so much faster and easier to work with than my old site. I just choose the page, make the change.”
+                        "PromoAI saved me hours of work. I got perfectly formatted content for all my social platforms in minutes!"
                       </Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
                         <Avatar src="https://cdn.rareblocks.xyz/collection/clarity/images/testimonial/4/avatar-male-1.png" alt="Leslie Alexander" sx={{ width: 44, height: 44, mr: 2 }} />
                         <Box>
                           <Typography sx={{ fontWeight: 700, color: '#181A20', fontSize: '1.08rem' }}>Leslie Alexander</Typography>
-                          <Typography sx={{ mt: 0.5, fontSize: '0.98rem', color: '#888' }}>Freelance React Developer</Typography>
+                          <Typography sx={{ mt: 0.5, fontSize: '0.98rem', color: '#888' }}>Content Creator</Typography>
                         </Box>
                       </Box>
                     </Paper>
                   </Box>
-                  {/*Testimonial 2*/}
+                  
                   <Box sx={{ width: 370, height: 380, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
                     <Box sx={{
                       position: 'absolute',
@@ -521,7 +488,7 @@ export default function Home() {
                         <StarIcon sx={{ color: '#FDB241', fontSize: 22 }} />
                       </Box>
                       <Typography sx={{ mt: 2, fontSize: '1.08rem', color: '#181A20', fontWeight: 500, lineHeight: 1.6 }}>
-                        “Simply the best. Better than all the rest. I'd recommend this product to beginners and advanced users.”
+                        "The quality of content is amazing. Each platform gets perfectly tailored messaging that actually converts."
                       </Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
                         <Avatar src="https://cdn.rareblocks.xyz/collection/clarity/images/testimonial/4/avatar-male-2.png" alt="Jacob Jones" sx={{ width: 44, height: 44, mr: 2 }} />
@@ -532,7 +499,7 @@ export default function Home() {
                       </Box>
                     </Paper>
                   </Box>
-                  {/*Testimonial 3*/}
+                  
                   <Box sx={{ width: 370, height: 380, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
                     <Box sx={{
                       position: 'absolute',
@@ -570,13 +537,13 @@ export default function Home() {
                         <StarIcon sx={{ color: '#FDB241', fontSize: 22 }} />
                       </Box>
                       <Typography sx={{ mt: 2, fontSize: '1.08rem', color: '#181A20', fontWeight: 500, lineHeight: 1.6 }}>
-                        “I cannot believe that I have got a brand new landing page after getting PromoAI. It was super easy to edit and publish.”
+                        "I love that I can generate content for multiple platforms at once. It's like having a marketing team in my pocket!"
                       </Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
                         <Avatar src="https://cdn.rareblocks.xyz/collection/clarity/images/testimonial/4/avatar-female.png" alt="Jenny Wilson" sx={{ width: 44, height: 44, mr: 2 }} />
                         <Box>
                           <Typography sx={{ fontWeight: 700, color: '#181A20', fontSize: '1.08rem' }}>Jenny Wilson</Typography>
-                          <Typography sx={{ mt: 0.5, fontSize: '0.98rem', color: '#888' }}>Graphic Designer</Typography>
+                          <Typography sx={{ mt: 0.5, fontSize: '0.98rem', color: '#888' }}>Startup Founder</Typography>
                         </Box>
                       </Box>
                     </Paper>
@@ -596,13 +563,12 @@ export default function Home() {
                 borderBottom: '2px solid #00FFFF',
                 textDecoration: 'none',
                 transition: 'color 0.2s, border-color 0.2s',
-              }}>Check all 2,157 reviews</a>
+              }}>See more reviews</a>
             </Box>
           </Container>
         </Box>
 
-        {/*FAQ Section*/}
-        <Container maxWidth="lg" sx={{ py: 8 }}>
+        <Container maxWidth="lg" sx={{ py: 8 }} id="faq">
           <Typography variant="h4" component="h2" textAlign="center" gutterBottom sx={{ fontWeight: 700, color: '#23272F', textShadow: '0 0 6px #00FFFF, 0 0 12px #00FFFF' }}>
             Frequently Asked Questions
           </Typography>
@@ -614,16 +580,17 @@ export default function Home() {
                   fontWeight: 600, 
                   color: '#FF00FF'
                 }}>
-                  📌 Why was my Reddit post removed?
+                  How does the content generation work?
                 </Typography>
                 <Typography variant="body2" sx={{ mb: 2 }}>
-                  Reddit's bots auto-filter posts from:
+                  Our AI analyzes your product details and creates:
                 </Typography>
                 <Box component="ul" sx={{ pl: 2, mb: 2 }}>
-                  <li>New accounts (&lt;7 days old)</li>
-                  <li>Low karma accounts (&lt;10 points)</li>
-                  <li>Links to "spammy" domains</li>
-                  <li>Accounts with posting history issues</li>
+                  <li>Reddit posts with engaging titles</li>
+                  <li>Twitter/X thread sequences</li>
+                  <li>Professional LinkedIn content</li>
+                  <li>Instagram captions with hashtags</li>
+                  <li>Email marketing copy</li>
                 </Box>
               </Paper>
             </Grid>
@@ -634,16 +601,16 @@ export default function Home() {
                   fontWeight: 600, 
                   color: '#00FF00'
                 }}>
-                  ✅ How to fix Reddit posting issues?
+                  Can I edit the generated content?
                 </Typography>
                 <Typography variant="body2" sx={{ mb: 2 }}>
-                  Build your Reddit presence:
+                  Absolutely! You can:
                 </Typography>
                 <Box component="ul" sx={{ pl: 2, mb: 2 }}>
-                  <li>Comment in r/AskReddit, r/aww, r/movies</li>
-                  <li>Upvote 10+ posts to build karma</li>
-                  <li>Wait 48 hours between posts</li>
-                  <li>Use trusted domains (GitHub, ProductHunt)</li>
+                  <li>Copy content to your clipboard</li>
+                  <li>Edit it in any text editor</li>
+                  <li>Customize for your specific needs</li>
+                  <li>Add your personal touch</li>
                 </Box>
               </Paper>
             </Grid>
@@ -654,16 +621,17 @@ export default function Home() {
                   fontWeight: 600, 
                   color: '#FFA500'
                 }}>
-                  🚀 What if my posts keep getting filtered?
+                  What platforms are supported?
                 </Typography>
                 <Typography variant="body2" sx={{ mb: 2 }}>
-                  Try these alternatives:
+                  We currently support:
                 </Typography>
                 <Box component="ul" sx={{ pl: 2, mb: 2 }}>
-                  <li>Contact subreddit moderators directly</li>
-                  <li>Post on Twitter, LinkedIn, or HackerNews</li>
-                  <li>Wait 24-48 hours and try again</li>
-                  <li>Use different subreddits</li>
+                  <li>Reddit (posts and titles)</li>
+                  <li>Twitter/X (thread format)</li>
+                  <li>LinkedIn (professional posts)</li>
+                  <li>Instagram (captions with hashtags)</li>
+                  <li>Email marketing (subject + body)</li>
                 </Box>
               </Paper>
             </Grid>
@@ -674,22 +642,24 @@ export default function Home() {
                   fontWeight: 600, 
                   color: '#00FFFF'
                 }}>
-                  💡 Best practices for Reddit promotion?
+                  How do I use the generated content?
                 </Typography>
                 <Typography variant="body2" sx={{ mb: 2 }}>
-                  Follow Reddit's guidelines:
+                  Simple process:
                 </Typography>
                 <Box component="ul" sx={{ pl: 2, mb: 2 }}>
-                  <li>Be transparent about self-promotion</li>
-                  <li>Add value to the community</li>
-                  <li>Ask for feedback, don't just promote</li>
-                  <li>Follow each subreddit's specific rules</li>
+                  <li>Click the copy button for each platform</li>
+                  <li>Paste into your platform of choice</li>
+                  <li>Make any final adjustments</li>
+                  <li>Post when you're ready</li>
                 </Box>
               </Paper>
             </Grid>
           </Grid>
         </Container>
       </Container>
+
+
 
       <Footer />
       <SignupLoginModal open={modalOpen} onClose={() => setModalOpen(false)} />

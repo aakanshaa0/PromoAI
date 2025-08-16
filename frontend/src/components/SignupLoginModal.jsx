@@ -13,7 +13,7 @@ import {
   Divider,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
-import RedditIcon from '@mui/icons-material/Reddit'
+
 import { AuthContext } from '../main'
 
 export default function SignupLoginModal({ open, onClose }) {
@@ -46,19 +46,7 @@ export default function SignupLoginModal({ open, onClose }) {
     }
   }
 
-  const handleRedditAuth = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const res = await fetch('/api/auth/reddit/auth')
-      const data = await res.json()
-      if (!res.ok || !data.authUrl) throw new Error('Failed to get Reddit auth URL')
-      window.location.href = data.authUrl
-    } catch (err) {
-      setError(err.message)
-      setLoading(false)
-    }
-  }
+
 
   const handleSwitchMode = () => {
     setMode(mode === 'login' ? 'signup' : 'login')
@@ -231,33 +219,7 @@ export default function SignupLoginModal({ open, onClose }) {
               borderColor: 'rgba(0,255,255,0.3)'
             }
           }}>or</Divider>
-          <Button
-            variant="outlined"
-            color="secondary"
-            startIcon={<RedditIcon />}
-            onClick={handleRedditAuth}
-            disabled={loading}
-            fullWidth
-            sx={{ 
-              fontWeight: 700, 
-              py: 1.2, 
-              borderRadius: 2, 
-              color: '#FF6600', 
-              borderColor: '#FF6600', 
-              background: '#0A0A0A',
-              textShadow: '0 0 5px #FF6600',
-              boxShadow: '0 0 10px rgba(255,102,0,0.3)',
-              '&:hover': { 
-                background: 'rgba(255,102,0,0.1)', 
-                borderColor: '#FF6600', 
-                color: '#FF6600',
-                boxShadow: '0 0 20px rgba(255,102,0,0.6)',
-                textShadow: '0 0 8px #FF6600',
-              } 
-            }}
-          >
-            {mode === 'login' ? 'Log in with Reddit' : 'Sign up with Reddit'}
-          </Button>
+
           <Stack direction="row" justifyContent="center" alignItems="center" mt={2}>
             <Typography variant="body2" sx={{ color: '#FFFFFF' }}>
               {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}

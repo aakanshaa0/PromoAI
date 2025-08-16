@@ -13,20 +13,28 @@ import {
   Divider,
   CircularProgress,
   Alert,
-  IconButton
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Tabs,
+  Tab,
+  Tooltip
 } from '@mui/material'
 import { 
   TrendingUp, 
-  Visibility, 
-  ThumbUp, 
-  Comment, 
-  Share, 
-  Refresh,
+  ContentCopy, 
+  Campaign, 
   Analytics,
-  Campaign,
-  Timeline,
   Assessment,
-  OpenInNew
+  OpenInNew,
+  Create,
+  Reddit,
+  Twitter,
+  LinkedIn,
+  Instagram,
+  Email
 } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
@@ -38,13 +46,14 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [stats, setStats] = useState({
-    totalPosts: 0,
-    totalViews: 0,
-    totalUpvotes: 0,
-    totalComments: 0,
-    successRate: 0,
-    recentPosts: []
+    totalProducts: 0,
+    totalContentGenerated: 0,
+    recentProducts: []
   })
+  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [contentDialogOpen, setContentDialogOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState(0)
+  const [copySuccess, setCopySuccess] = useState(false)
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -69,14 +78,10 @@ export default function Dashboard() {
         setStats(data)
       } catch (err) {
         setError(err.message)
-        //Data for demo-Empty posts to show no posts state
         setStats({
-          totalPosts: 0,
-          totalViews: 0,
-          totalUpvotes: 0,
-          totalComments: 0,
-          successRate: 0,
-          recentPosts: []
+          totalProducts: 0,
+          totalContentGenerated: 0,
+          recentProducts: []
         })
       } finally {
         setLoading(false)
@@ -130,16 +135,36 @@ export default function Dashboard() {
     )
   }
 
+  const handleContentClick = (product) => {
+    setSelectedProduct(product)
+    setContentDialogOpen(true)
+    setActiveTab(0)
+  }
+
+  const handleCloseContent = () => {
+    setContentDialogOpen(false)
+    setSelectedProduct(null)
+  }
+
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopySuccess(true)
+      setTimeout(() => setCopySuccess(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy text: ', err)
+    }
+  }
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#0A0A0A' }}>
       <Navbar />
-      <Container maxWidth="lg" sx={{ py: 6, flex: 1 }}>
-        {/*Header*/}
+      <Container maxWidth="lg" sx={{ py: 8, flex: 1 }}>
         <Box sx={{ mb: 6 }}>
           <Typography variant="h3" sx={{ 
             color: '#FF00FF',
-            mb: 2,
-            fontWeight: 800
+            fontWeight: 800,
+            mb: 2
           }}>
             Dashboard
           </Typography>
@@ -147,7 +172,7 @@ export default function Dashboard() {
             color: '#00FFFF',
             opacity: 0.8
           }}>
-            Welcome back! Here's your promotion performance overview.
+            Welcome back! Here's your content generation overview.
           </Typography>
         </Box>
 
@@ -162,16 +187,30 @@ export default function Dashboard() {
           </Alert>
         )}
 
+        {copySuccess && (
+          <Alert 
+            severity="success" 
+            sx={{ 
+              mb: 3,
+              background: 'rgba(76, 175, 80, 0.1)',
+              border: '1px solid #4CAF50',
+              color: '#4CAF50'
+            }}
+            onClose={() => setCopySuccess(false)}
+          >
+            Content copied to clipboard successfully!
+          </Alert>
+        )}
+        
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
             <CircularProgress sx={{ color: '#00FFFF' }} />
           </Box>
         ) : (
           <>
-            {/*Stats Cards*/}
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 6 }}>
-              <Grid container spacing={3} sx={{ maxWidth: 1000 }}>
-                <Grid item xs={12} sm={6} md={2.4}>
+              <Grid container spacing={3} sx={{ maxWidth: 800 }}>
+                <Grid item xs={12} sm={6}>
                   <Card sx={{ 
                     background: '#1A1A1A',
                     border: '1px solid rgba(0,255,255,0.3)',
@@ -192,140 +231,44 @@ export default function Dashboard() {
                         color: '#FFFFFF',
                         fontWeight: 700
                       }}>
-                        {stats.totalPosts}
+                        {stats.totalProducts}
                       </Typography>
                       <Typography variant="body2" sx={{ 
                         color: '#00FFFF'
                       }}>
-                        Total Posts
+                        Products Created
                       </Typography>
                     </CardContent>
                   </Card>
                 </Grid>
 
-                <Grid item xs={12} sm={6} md={2.4}>
+                <Grid item xs={12} sm={6}>
                   <Card sx={{ 
                     background: '#1A1A1A',
-                    border: '1px solid rgba(0,255,0,0.3)',
-                    boxShadow: '0 0 20px rgba(0,255,0,0.2)',
+                    border: '1px solid rgba(0,255,255,0.3)',
+                    boxShadow: '0 0 20px rgba(0,255,255,0.2)',
                     '&:hover': {
-                      border: '1px solid rgba(0,255,0,0.8)',
-                      boxShadow: '0 0 30px rgba(0,255,0,0.4)',
+                      border: '1px solid rgba(0,255,255,0.8)',
+                      boxShadow: '0 0 30px rgba(0,255,255,0.4)',
                     }
                   }}>
                     <CardContent sx={{ textAlign: 'center', p: 3 }}>
-                      <Visibility sx={{ 
+                      <ContentCopy sx={{ 
                         fontSize: 40, 
-                        color: '#00FF00',
+                        color: '#00FFFF',
                         mb: 1,
-                        filter: 'drop-shadow(0 0 8px #00FF00)'
+                        filter: 'drop-shadow(0 0 8px #00FFFF)'
                       }} />
                       <Typography variant="h4" sx={{ 
                         color: '#FFFFFF',
                         fontWeight: 700
                       }}>
-                        {stats.totalViews.toLocaleString()}
+                        {stats.totalContentGenerated}
                       </Typography>
                       <Typography variant="body2" sx={{ 
-                        color: '#00FF00'
+                        color: '#00FFFF'
                       }}>
-                        Total Views
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-
-                <Grid item xs={12} sm={6} md={2.4}>
-                  <Card sx={{ 
-                    background: '#1A1A1A',
-                    border: '1px solid rgba(255,255,0,0.3)',
-                    boxShadow: '0 0 20px rgba(255,255,0,0.2)',
-                    '&:hover': {
-                      border: '1px solid rgba(255,255,0,0.8)',
-                      boxShadow: '0 0 30px rgba(255,255,0,0.4)',
-                    }
-                  }}>
-                    <CardContent sx={{ textAlign: 'center', p: 3 }}>
-                      <ThumbUp sx={{ 
-                        fontSize: 40, 
-                        color: '#FFFF00',
-                        mb: 1,
-                        filter: 'drop-shadow(0 0 8px #FFFF00)'
-                      }} />
-                      <Typography variant="h4" sx={{ 
-                        color: '#FFFFFF',
-                        fontWeight: 700
-                      }}>
-                        {stats.totalUpvotes}
-                      </Typography>
-                      <Typography variant="body2" sx={{ 
-                        color: '#FFFF00'
-                      }}>
-                        Total Upvotes
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-
-                <Grid item xs={12} sm={6} md={2.4}>
-                  <Card sx={{ 
-                    background: '#1A1A1A',
-                    border: '1px solid rgba(255,0,255,0.3)',
-                    boxShadow: '0 0 20px rgba(255,0,255,0.2)',
-                    '&:hover': {
-                      border: '1px solid rgba(255,0,255,0.8)',
-                      boxShadow: '0 0 30px rgba(255,0,255,0.4)',
-                    }
-                  }}>
-                    <CardContent sx={{ textAlign: 'center', p: 3 }}>
-                      <Comment sx={{ 
-                        fontSize: 40, 
-                        color: '#FF00FF',
-                        mb: 1,
-                        filter: 'drop-shadow(0 0 8px #FF00FF)'
-                      }} />
-                      <Typography variant="h4" sx={{ 
-                        color: '#FFFFFF',
-                        fontWeight: 700
-                      }}>
-                        {stats.totalComments}
-                      </Typography>
-                      <Typography variant="body2" sx={{ 
-                        color: '#FF00FF'
-                      }}>
-                        Total Comments
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-
-                <Grid item xs={12} sm={6} md={2.4}>
-                  <Card sx={{ 
-                    background: '#1A1A1A',
-                    border: '1px solid rgba(255,165,0,0.3)',
-                    boxShadow: '0 0 20px rgba(255,165,0,0.2)',
-                    '&:hover': {
-                      border: '1px solid rgba(255,165,0,0.8)',
-                      boxShadow: '0 0 30px rgba(255,165,0,0.4)',
-                    }
-                  }}>
-                    <CardContent sx={{ textAlign: 'center', p: 3 }}>
-                      <Assessment sx={{ 
-                        fontSize: 40, 
-                        color: '#FFA500',
-                        mb: 1,
-                        filter: 'drop-shadow(0 0 8px #FFA500)'
-                      }} />
-                      <Typography variant="h4" sx={{ 
-                        color: '#FFFFFF',
-                        fontWeight: 700
-                      }}>
-                        {stats.successRate}%
-                      </Typography>
-                      <Typography variant="body2" sx={{ 
-                        color: '#FFA500'
-                      }}>
-                        Success Rate
+                        Content Pieces Generated
                       </Typography>
                     </CardContent>
                   </Card>
@@ -333,245 +276,411 @@ export default function Dashboard() {
               </Grid>
             </Box>
 
-            {/* Promote Button */}
-            <Box sx={{ mt: 6, mb: 4, display: 'flex', justifyContent: 'center' }}>
-              <Button
-                component={Link}
-                to="/promote"
-                variant="contained"
-                size="large"
-                startIcon={<Campaign />}
-                sx={{
-                  background: '#00FFFF',
-                  border: '2px solid #00FFFF',
-                  color: '#181A1A',
-                  boxShadow: '0 0 20px rgba(0,255,255,0.6)',
-                  px: 4,
-                  py: 1.5,
-                  fontSize: '1.1rem',
-                  fontWeight: 700,
-                  '&:hover': {
-                    background: '#00e6e6',
-                    boxShadow: '0 0 30px rgba(0,255,255,0.9)',
-                    border: '2px solid #00FFFF',
-                    transform: 'translateY(-3px)',
-                  }
-                }}
-              >
-                Promote New Product
-              </Button>
-            </Box>
-
-            {/* All Posts Section */}
-            <Box sx={{ mt: 6, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Typography variant="h4" sx={{ 
-                color: '#00FF00',
-                mb: 4,
-                fontWeight: 800,
-                textAlign: 'center'
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 6 }}>
+              <Paper sx={{ 
+                p: 4, 
+                background: '#1A1A1A',
+                border: '1px solid rgba(0,255,255,0.3)',
+                boxShadow: '0 0 20px rgba(0,255,255,0.2)',
+                width: '100%',
+                maxWidth: 1000
               }}>
-                Your Reddit Posts
-              </Typography>
-              
-              {stats.recentPosts.length === 0 ? (
-                <Paper sx={{ 
-                  p: 6,
-                  textAlign: 'center',
-                  background: '#1A1A1A',
-                  border: '1px solid rgba(0,255,255,0.3)',
-                  boxShadow: '0 0 20px rgba(0,255,255,0.2)'
-                }}>
-                  <Share sx={{ 
-                    fontSize: 80, 
-                    color: '#00FFFF',
-                    mb: 2,
-                    opacity: 0.5,
-                    filter: 'drop-shadow(0 0 10px #00FFFF)'
-                  }} />
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                   <Typography variant="h5" sx={{ 
-                    color: '#FFFFFF',
-                    mb: 2
-                  }}>
-                    No Posts Made Yet
-                  </Typography>
-                  <Typography variant="body1" sx={{ 
                     color: '#00FFFF',
-                    mb: 4,
-                    opacity: 0.8
+                    fontWeight: 700
                   }}>
-                    Start promoting your products on Reddit to see your posts here!
+                    Recent Products
                   </Typography>
                   <Button
                     component={Link}
                     to="/promote"
                     variant="contained"
-                    startIcon={<Campaign />}
+                    startIcon={<Create />}
                     sx={{
-                      background: '#00FFFF',
+                      background: 'linear-gradient(45deg, #00FFFF, #0080FF)',
                       border: '2px solid #00FFFF',
-                      color: '#181A1A',
                       boxShadow: '0 0 15px rgba(0,255,255,0.5)',
                       '&:hover': {
-                        background: '#00e6e6',
+                        background: 'linear-gradient(45deg, #0080FF, #00FFFF)',
                         boxShadow: '0 0 25px rgba(0,255,255,0.8)',
-                        border: '2px solid #00FFFF',
-                        transform: 'translateY(-2px)',
                       }
                     }}
                   >
-                    Create Your First Post
+                    Generate New Content
                   </Button>
-                </Paper>
-              ) : (
-                <Grid container spacing={3}>
-                  {stats.recentPosts.map((post) => (
-                    <Grid item xs={12} md={6} lg={4} key={post.id}>
-                      <Paper 
-                        component={post.redditUrl ? 'a' : 'div'}
-                        href={post.redditUrl || undefined}
-                        target={post.redditUrl ? '_blank' : undefined}
-                        rel={post.redditUrl ? 'noopener noreferrer' : undefined}
-                        sx={{ 
-                          p: 3,
-                          height: '100%',
-                          background: '#1A1A1A',
-                          border: post.status === 'posted' ? '1px solid rgba(0,255,0,0.3)' : 
-                                  post.status === 'failed' ? '1px solid rgba(255,0,0,0.3)' : 
-                                  '1px solid rgba(255,165,0,0.3)',
-                          boxShadow: post.status === 'posted' ? '0 0 20px rgba(0,255,0,0.2)' : 
-                                    post.status === 'failed' ? '0 0 20px rgba(255,0,0,0.2)' : 
-                                    '0 0 20px rgba(255,165,0,0.2)',
-                          '&:hover': {
-                            border: post.status === 'posted' ? '1px solid rgba(0,255,0,0.8)' : 
-                                    post.status === 'failed' ? '1px solid rgba(255,0,0,0.8)' : 
-                                    '1px solid rgba(255,165,0,0.8)',
-                            boxShadow: post.status === 'posted' ? '0 0 30px rgba(0,255,0,0.4)' : 
-                                      post.status === 'failed' ? '0 0 30px rgba(255,0,0,0.4)' : 
-                                      '0 0 30px rgba(255,165,0,0.4)',
-                            transform: 'translateY(-2px)',
-                            cursor: post.redditUrl ? 'pointer' : 'default',
-                          },
-                          transition: 'all 0.3s ease',
-                          textDecoration: 'none',
-                          display: 'block'
-                        }}
-                      >
+                </Box>
+
+                {stats.recentProducts && stats.recentProducts.length > 0 ? (
+                  <Stack spacing={2}>
+                    {stats.recentProducts.map((product, index) => (
+                      <Paper key={index} sx={{ 
+                        p: 3, 
+                        background: '#0A0A0A',
+                        border: '1px solid rgba(0,255,255,0.2)',
+                        '&:hover': {
+                          border: '1px solid rgba(0,255,255,0.5)',
+                        }
+                      }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                          <Typography variant="h6" sx={{ 
-                            color: '#FFFFFF',
-                            fontWeight: 600,
-                            flex: 1,
-                            mr: 2
-                          }}>
-                            {post.title}
-                          </Typography>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            {post.redditUrl && (
-                              <OpenInNew sx={{ 
-                                fontSize: 16, 
-                                color: '#00FFFF',
-                                filter: 'drop-shadow(0 0 3px #00FFFF)'
-                              }} />
-                            )}
-                            <Chip 
-                              label={post.status} 
-                              size="small"
-                              sx={{
-                                background: post.status === 'posted' ? 'rgba(0,255,0,0.2)' : 
-                                           post.status === 'failed' ? 'rgba(255,0,0,0.2)' : 
-                                           'rgba(255,165,0,0.2)',
-                                color: post.status === 'posted' ? '#00FF00' : 
-                                       post.status === 'failed' ? '#FF0000' : 
-                                       '#FFA500',
-                                border: `1px solid ${post.status === 'posted' ? 'rgba(0,255,0,0.5)' : 
-                                                   post.status === 'failed' ? 'rgba(255,0,0,0.5)' : 
-                                                   'rgba(255,165,0,0.5)'}`,
-                                textShadow: `0 0 3px ${post.status === 'posted' ? '#00FF00' : 
-                                                       post.status === 'failed' ? '#FF0000' : 
-                                                       '#FFA500'}`,
-                                fontWeight: 600
-                              }}
-                            />
+                          <Box>
+                            <Typography variant="h6" sx={{ 
+                              color: '#FFFFFF',
+                              fontWeight: 600,
+                              mb: 1
+                            }}>
+                              {product.name}
+                            </Typography>
+                            <Typography variant="body2" sx={{ 
+                              color: '#00FFFF',
+                              mb: 2
+                            }}>
+                              {product.description}
+                            </Typography>
+                            <Stack direction="row" spacing={1}>
+                              {product.categories && product.categories.map((category, catIndex) => (
+                                <Chip
+                                  key={catIndex}
+                                  label={category}
+                                  size="small"
+                                  sx={{
+                                    bgcolor: 'rgba(0,255,255,0.2)',
+                                    color: '#00FFFF',
+                                    border: '1px solid rgba(0,255,255,0.3)'
+                                  }}
+                                />
+                              ))}
+                            </Stack>
                           </Box>
+                          <Tooltip title="View Generated Content">
+                            <IconButton
+                              onClick={() => handleContentClick(product)}
+                              sx={{ color: '#00FFFF' }}
+                            >
+                              <OpenInNew />
+                            </IconButton>
+                          </Tooltip>
                         </Box>
-                        
+                        <Divider sx={{ borderColor: 'rgba(0,255,255,0.2)', my: 2 }} />
                         <Typography variant="body2" sx={{ 
                           color: '#00FFFF',
-                          mb: 2,
-                          fontWeight: 500
+                          fontStyle: 'italic'
                         }}>
-                          {post.subreddit}
+                          Click the link icon to view generated content for: Reddit, Twitter, LinkedIn, Instagram, Email
                         </Typography>
-                        
-                        <Typography variant="body2" sx={{ 
-                          color: '#FFFFFF',
-                          mb: 3,
-                          opacity: 0.8
-                        }}>
-                          Posted on {new Date(post.date).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}
-                        </Typography>
-                        
-                        <Divider sx={{ 
-                          mb: 2, 
-                          borderColor: 'rgba(0,255,255,0.3)'
-                        }} />
-                        
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Box sx={{ display: 'flex', gap: 3 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              <Visibility sx={{ fontSize: 18, color: '#00FF00' }} />
-                              <Typography variant="body2" sx={{ 
-                                color: '#00FF00',
-                                fontWeight: 600
-                              }}>
-                                {post.views.toLocaleString()}
-                              </Typography>
-                            </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              <ThumbUp sx={{ fontSize: 18, color: '#FFFF00' }} />
-                              <Typography variant="body2" sx={{ 
-                                color: '#FFFF00',
-                                fontWeight: 600
-                              }}>
-                                {post.upvotes}
-                              </Typography>
-                            </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              <Comment sx={{ fontSize: 18, color: '#FF00FF' }} />
-                              <Typography variant="body2" sx={{ 
-                                color: '#FF00FF',
-                                fontWeight: 600
-                              }}>
-                                {post.comments}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </Box>
-                        
-                        {post.redditUrl && (
-                          <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid rgba(0,255,255,0.2)' }}>
-                            <Typography variant="caption" sx={{ 
-                              color: '#00FFFF',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 0.5,
-                              opacity: 0.8
-                            }}>
-                              <OpenInNew sx={{ fontSize: 14 }} />
-                              Click to view on Reddit
-                            </Typography>
-                          </Box>
-                        )}
                       </Paper>
-                    </Grid>
-                  ))}
-                </Grid>
-              )}
+                    ))}
+                  </Stack>
+                ) : (
+                  <Box sx={{ textAlign: 'center', py: 4 }}>
+                    <Create sx={{ 
+                      fontSize: 60, 
+                      color: 'rgba(0,255,255,0.3)',
+                      mb: 2
+                    }} />
+                    <Typography variant="h6" sx={{ 
+                      color: '#00FFFF',
+                      mb: 2
+                    }}>
+                      No products yet
+                    </Typography>
+                    <Typography variant="body2" sx={{ 
+                      color: '#FFFFFF',
+                      opacity: 0.7,
+                      mb: 3
+                    }}>
+                      Start creating products to generate promotional content
+                    </Typography>
+                    <Button
+                      component={Link}
+                      to="/promote"
+                      variant="contained"
+                      sx={{
+                        background: 'linear-gradient(45deg, #00FFFF, #0080FF)',
+                        border: '2px solid #00FFFF',
+                        boxShadow: '0 0 15px rgba(0,255,255,0.5)',
+                        '&:hover': {
+                          background: 'linear-gradient(45deg, #0080FF, #00FFFF)',
+                          boxShadow: '0 0 25px rgba(0,255,255,0.8)',
+                        }
+                      }}
+                    >
+                      Create Your First Product
+                    </Button>
+                  </Box>
+                )}
+              </Paper>
             </Box>
+
+            <Dialog open={contentDialogOpen} onClose={handleCloseContent} maxWidth="md" fullWidth>
+              <DialogTitle sx={{ 
+                background: '#1A1A1A', 
+                color: '#00FFFF',
+                borderBottom: '1px solid rgba(0,255,255,0.3)'
+              }}>
+                {selectedProduct ? selectedProduct.name : ''}
+              </DialogTitle>
+              <DialogContent sx={{ background: '#0A0A0A', p: 0 }}>
+                <Tabs 
+                  value={activeTab} 
+                  onChange={(event, newValue) => setActiveTab(newValue)}
+                  sx={{ 
+                    background: '#1A1A1A',
+                    borderBottom: '1px solid rgba(0,255,255,0.3)',
+                    '& .MuiTab-root': {
+                      color: '#FFFFFF',
+                      '&.Mui-selected': {
+                        color: '#00FFFF'
+                      }
+                    }
+                  }}
+                >
+                  <Tab label="Generated Content" />
+                  <Tab label="Product Details" />
+                </Tabs>
+
+                {activeTab === 0 && (
+                  <Box sx={{ p: 3 }}>
+                    {selectedProduct?.multiPlatformContent ? (
+                      <>
+                        {/*Reddit Content*/}
+                        {selectedProduct.multiPlatformContent.reddit && (
+                          <Paper sx={{ p: 3, mb: 3, background: '#1A1A1A', border: '1px solid rgba(0,255,255,0.2)' }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <Reddit sx={{ color: '#FF4500', mr: 1, fontSize: 24 }} />
+                                <Typography variant="h6" sx={{ color: '#00FFFF' }}>
+                                  Reddit Post
+                                </Typography>
+                              </Box>
+                              <IconButton 
+                                onClick={() => copyToClipboard(
+                                  `**Title:** ${selectedProduct.multiPlatformContent.reddit.title}\n\n${selectedProduct.multiPlatformContent.reddit.post}`
+                                )} 
+                                sx={{ color: '#00FFFF' }}
+                              >
+                                <ContentCopy />
+                              </IconButton>
+                            </Box>
+                            {selectedProduct.multiPlatformContent.reddit.title && (
+                              <Typography variant="subtitle1" sx={{ color: '#FFFFFF', fontWeight: 'bold', mb: 2 }}>
+                                {selectedProduct.multiPlatformContent.reddit.title}
+                              </Typography>
+                            )}
+                            <Typography variant="body2" sx={{ color: '#FFFFFF', whiteSpace: 'pre-wrap' }}>
+                              {selectedProduct.multiPlatformContent.reddit.post}
+                            </Typography>
+                          </Paper>
+                        )}
+
+                        {/*Twitter Content*/}
+                        {selectedProduct.multiPlatformContent.twitter && selectedProduct.multiPlatformContent.twitter.thread && (
+                          <Paper sx={{ p: 3, mb: 3, background: '#1A1A1A', border: '1px solid rgba(0,255,255,0.2)' }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <Twitter sx={{ color: '#1DA1F2', mr: 1, fontSize: 24 }} />
+                                <Typography variant="h6" sx={{ color: '#00FFFF' }}>
+                                  Twitter/X Thread
+                                </Typography>
+                              </Box>
+                              <IconButton 
+                                onClick={() => copyToClipboard(selectedProduct.multiPlatformContent.twitter.thread.join('\n\n'))} 
+                                sx={{ color: '#00FFFF' }}
+                              >
+                                <ContentCopy />
+                              </IconButton>
+                            </Box>
+                            {selectedProduct.multiPlatformContent.twitter.thread.map((tweet, index) => (
+                              <Box key={index} sx={{ mb: 2, p: 2, background: '#0A0A0A', borderRadius: 1 }}>
+                                <Typography variant="body2" sx={{ color: '#FFFFFF', whiteSpace: 'pre-wrap' }}>
+                                  {tweet}
+                                </Typography>
+                              </Box>
+                            ))}
+                          </Paper>
+                        )}
+
+                        {/*LinkedIn Content*/}
+                        {selectedProduct.multiPlatformContent.linkedin && (
+                          <Paper sx={{ p: 3, mb: 3, background: '#1A1A1A', border: '1px solid rgba(0,255,255,0.2)' }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <LinkedIn sx={{ color: '#0077B5', mr: 1, fontSize: 24 }} />
+                                <Typography variant="h6" sx={{ color: '#00FFFF' }}>
+                                  LinkedIn Post
+                                </Typography>
+                              </Box>
+                              <IconButton 
+                                onClick={() => copyToClipboard(selectedProduct.multiPlatformContent.linkedin)} 
+                                sx={{ color: '#00FFFF' }}
+                              >
+                                <ContentCopy />
+                              </IconButton>
+                            </Box>
+                            <Typography variant="body2" sx={{ color: '#FFFFFF', whiteSpace: 'pre-wrap' }}>
+                              {selectedProduct.multiPlatformContent.linkedin}
+                            </Typography>
+                          </Paper>
+                        )}
+
+                        {/*Instagram Content*/}
+                        {selectedProduct.multiPlatformContent.instagram && (
+                          <Paper sx={{ p: 3, mb: 3, background: '#1A1A1A', border: '1px solid rgba(0,255,255,0.2)' }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <Instagram sx={{ color: '#E4405F', mr: 1, fontSize: 24 }} />
+                                <Typography variant="h6" sx={{ color: '#00FFFF' }}>
+                                  Instagram Caption
+                                </Typography>
+                              </Box>
+                              <IconButton 
+                                onClick={() => copyToClipboard(selectedProduct.multiPlatformContent.instagram)} 
+                                sx={{ color: '#00FFFF' }}
+                              >
+                                <ContentCopy />
+                              </IconButton>
+                            </Box>
+                            <Typography variant="body2" sx={{ color: '#FFFFFF', whiteSpace: 'pre-wrap' }}>
+                              {selectedProduct.multiPlatformContent.instagram}
+                            </Typography>
+                          </Paper>
+                        )}
+
+                        {/*Email Content*/}
+                        {selectedProduct.multiPlatformContent.email && (
+                          <Paper sx={{ p: 3, mb: 3, background: '#1A1A1A', border: '1px solid rgba(0,255,255,0.2)' }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <Email sx={{ color: '#EA4335', mr: 1, fontSize: 24 }} />
+                                <Typography variant="h6" sx={{ color: '#00FFFF' }}>
+                                  Email Marketing
+                                </Typography>
+                              </Box>
+                              <IconButton 
+                                onClick={() => copyToClipboard(
+                                  `Subject: ${selectedProduct.multiPlatformContent.email.subject}\n\n${selectedProduct.multiPlatformContent.email.body}`
+                                )} 
+                                sx={{ color: '#00FFFF' }}
+                              >
+                                <ContentCopy />
+                              </IconButton>
+                            </Box>
+                            {selectedProduct.multiPlatformContent.email.subject && (
+                              <Typography variant="subtitle1" sx={{ color: '#FFFFFF', fontWeight: 'bold', mb: 2 }}>
+                                Subject: {selectedProduct.multiPlatformContent.email.subject}
+                              </Typography>
+                            )}
+                            <Typography variant="body2" sx={{ color: '#FFFFFF', whiteSpace: 'pre-wrap' }}>
+                              {selectedProduct.multiPlatformContent.email.body}
+                            </Typography>
+                          </Paper>
+                        )}
+
+                        {/*No content fallback*/}
+                        {(!selectedProduct.multiPlatformContent.reddit && 
+                          !selectedProduct.multiPlatformContent.twitter && 
+                          !selectedProduct.multiPlatformContent.linkedin && 
+                          !selectedProduct.multiPlatformContent.instagram && 
+                          !selectedProduct.multiPlatformContent.email) && (
+                          <Paper sx={{ p: 3, background: '#1A1A1A', border: '1px solid rgba(255,0,0,0.3)' }}>
+                            <Typography variant="h6" sx={{ color: '#FF0000', textAlign: 'center', mb: 2 }}>
+                              No Generated Content Found
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: '#FFFFFF', textAlign: 'center' }}>
+                              This product doesn't have any generated promotional content yet.
+                            </Typography>
+                          </Paper>
+                        )}
+                      </>
+                    ) : (
+                      <Paper sx={{ p: 3, background: '#1A1A1A', border: '1px solid rgba(255,0,0,0.3)' }}>
+                        <Typography variant="h6" sx={{ color: '#FF0000', textAlign: 'center', mb: 2 }}>
+                          No Content Data Available
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#FFFFFF', textAlign: 'center' }}>
+                          This product doesn't have the multiPlatformContent field.
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#FFFFFF', textAlign: 'center', mt: 1, fontSize: '12px' }}>
+                          Product data: {JSON.stringify(selectedProduct, null, 2)}
+                        </Typography>
+                      </Paper>
+                    )}
+                  </Box>
+                )}
+
+                {activeTab === 1 && (
+                  <Box sx={{ p: 3 }}>
+                    <Typography variant="subtitle2" sx={{ color: '#00FFFF', mb: 2, fontWeight: 'bold' }}>
+                      Product Details
+                    </Typography>
+                    <Stack spacing={2}>
+                      <Box>
+                        <Typography variant="body2" sx={{ color: '#00FFFF', fontWeight: 'bold' }}>
+                          Name:
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#FFFFFF' }}>
+                          {selectedProduct?.name}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" sx={{ color: '#00FFFF', fontWeight: 'bold' }}>
+                          Description:
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#FFFFFF' }}>
+                          {selectedProduct?.description}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" sx={{ color: '#00FFFF', fontWeight: 'bold' }}>
+                          Categories:
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#FFFFFF' }}>
+                          {selectedProduct?.categories?.join(', ')}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" sx={{ color: '#00FFFF', fontWeight: 'bold' }}>
+                          URL:
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#FFFFFF' }}>
+                          {selectedProduct?.url}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" sx={{ color: '#00FFFF', fontWeight: 'bold' }}>
+                          Contact:
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#FFFFFF' }}>
+                          {selectedProduct?.contact}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" sx={{ color: '#00FFFF', fontWeight: 'bold' }}>
+                          Created:
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#FFFFFF' }}>
+                          {selectedProduct?.createdAt ? new Date(selectedProduct.createdAt).toLocaleDateString() : 'N/A'}
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  </Box>
+                )}
+              </DialogContent>
+              <DialogActions sx={{ background: '#1A1A1A', borderTop: '1px solid rgba(0,255,255,0.3)' }}>
+                <Button 
+                  onClick={handleCloseContent} 
+                  sx={{ 
+                    color: '#00FFFF',
+                    border: '1px solid #00FFFF',
+                    '&:hover': {
+                      background: 'rgba(0,255,255,0.1)'
+                    }
+                  }}
+                >
+                  Close
+                </Button>
+              </DialogActions>
+            </Dialog>
           </>
         )}
       </Container>

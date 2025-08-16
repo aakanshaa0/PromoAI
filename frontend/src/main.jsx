@@ -11,10 +11,10 @@ export const AuthContext = createContext({ isLoggedIn: false, user: null, login:
 const lightTheme = createTheme({
   palette: {
     mode: 'light',
-    primary: { main: '#00FFFF' }, // Cyan neon
-    secondary: { main: '#FF00FF' }, // Magenta neon
-    accent: { main: '#00FF00' }, // Green neon
-    background: { default: '#0A0A0A', paper: '#1A1A1A' }, // Dark cyber background
+    primary: { main: '#00FFFF' },
+    secondary: { main: '#FF00FF' },
+    accent: { main: '#00FF00' },
+    background: { default: '#0A0A0A', paper: '#1A1A1A' },
     text: { 
       primary: '#FFFFFF',
       secondary: '#00FFFF'
@@ -83,10 +83,10 @@ const lightTheme = createTheme({
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
-    primary: { main: '#00FFFF' }, // Cyan neon
-    secondary: { main: '#FF00FF' }, // Magenta neon
-    accent: { main: '#00FF00' }, // Green neon
-    background: { default: '#0A0A0A', paper: '#1A1A1A' }, // Dark cyber background
+    primary: { main: '#00FFFF' },
+    secondary: { main: '#FF00FF' },
+    accent: { main: '#00FF00' },
+    background: { default: '#0A0A0A', paper: '#1A1A1A' },
     text: { 
       primary: '#FFFFFF',
       secondary: '#00FFFF'

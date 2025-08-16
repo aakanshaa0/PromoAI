@@ -1,6 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Cyber Neon Theme Styles */
+html {
+  scroll-behavior: smooth;
+}
+
+section[id], div[id] {
+  scroll-margin-top: 80px;
+}
+
 @keyframes neonGlow {
   0%, 100% {
     text-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF, 0 0 15px #00FFFF, 0 0 20px #00FFFF;
@@ -47,7 +54,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Matrix background effect */
 body::before {
   content: '';
   position: fixed;
@@ -64,7 +70,6 @@ body::before {
   opacity: 0.3;
 }
 
-/* Scanline effect */
 body::after {
   content: '';
   position: fixed;
@@ -85,7 +90,6 @@ body::after {
   position: relative;
 }
 
-/* Neon text effects */
 .neon-text {
   animation: neonGlow 2s ease-in-out infinite alternate;
 }
@@ -110,14 +114,12 @@ body::after {
   text-shadow: 0 0 5px #FFFF00, 0 0 10px #FFFF00, 0 0 15px #FFFF00;
 }
 
-/* Neon border effects */
 .neon-border {
   border: 1px solid #00FFFF;
   box-shadow: 0 0 10px rgba(0,255,255,0.5), inset 0 0 10px rgba(0,255,255,0.1);
   animation: neonPulse 2s ease-in-out infinite alternate;
 }
 
-/* Cyber button styles */
 .cyber-button {
   background: linear-gradient(45deg, #00FFFF, #0080FF);
   border: 2px solid #00FFFF;
@@ -133,7 +135,6 @@ body::after {
   transform: translateY(-2px);
 }
 
-/* Glitch effect */
 .glitch {
   position: relative;
   animation: glitch 1s infinite;
@@ -160,7 +161,6 @@ body::after {
   }
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
