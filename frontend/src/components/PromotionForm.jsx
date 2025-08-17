@@ -24,6 +24,7 @@ export default function PromotionForm({ onSubmit, isSubmitting }) {
     url: '',
     contact: '',
     categories: [],
+    imagePrompt: '',
   })
   const [errors, setErrors] = useState({})
 
@@ -322,6 +323,74 @@ export default function PromotionForm({ onSubmit, isSubmitting }) {
           }}>
             We'll generate promotional content for Reddit, Twitter, LinkedIn, Instagram, and Email marketing
           </Typography>
+
+          <Divider sx={{ 
+            my: 2, 
+            borderColor: 'rgba(255,0,255,0.3)',
+            '&::before, &::after': {
+              borderColor: 'rgba(255,0,255,0.3)'
+            }
+          }} />
+
+          <Box>
+            <Typography variant="subtitle1" gutterBottom sx={{ 
+              color: '#FF00FF', 
+              fontWeight: 600,
+              textShadow: '0 0 5px #FF00FF',
+              mb: 2
+            }}>
+              🎨 Generate Promotional Image (Optional)
+            </Typography>
+            
+            <TextField
+              label="Image Description"
+              multiline
+              rows={3}
+              variant="outlined"
+              fullWidth
+              value={product.imagePrompt || ''}
+              onChange={(e) => setProduct({ ...product, imagePrompt: e.target.value })}
+              placeholder="Describe the image you want to generate (e.g., 'A modern tech startup office with people collaborating, clean design, professional lighting')"
+              helperText="Leave empty if you don't want an image generated"
+              sx={{
+                background: '#0A0A0A',
+                borderRadius: '8px',
+                textarea: { 
+                  color: '#FFFFFF', 
+                  fontWeight: 500,
+                  textShadow: '0 0 3px #FFFFFF'
+                },
+                label: { 
+                  color: '#FF00FF',
+                  textShadow: '0 0 5px #FF00FF'
+                },
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': { 
+                    borderColor: 'rgba(255,0,255,0.3)',
+                    borderWidth: '2px'
+                  },
+                  '&:hover fieldset': { 
+                    borderColor: '#FF00FF',
+                    boxShadow: '0 0 10px rgba(255,0,255,0.3)'
+                  },
+                  '&.Mui-focused fieldset': { 
+                    borderColor: '#FF00FF',
+                    boxShadow: '0 0 15px rgba(255,0,255,0.5)'
+                  },
+                },
+              }}
+              InputLabelProps={{ style: { color: '#FF00FF', fontWeight: 600 } }}
+            />
+            
+            <Typography variant="caption" sx={{ 
+              color: '#CCCCCC', 
+              display: 'block', 
+              mt: 1,
+              fontStyle: 'italic'
+            }}>
+              💡 Tip: Be specific about style, mood, colors, and composition for better results
+            </Typography>
+          </Box>
 
           <Button
             type="submit"

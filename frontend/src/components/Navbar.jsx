@@ -13,13 +13,6 @@ export default function Navbar() {
   const [modalOpen, setModalOpen] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
-  const navItems = [
-    { label: 'How It Works', href: '#how-it-works' },
-    { label: 'Platforms', href: '#platforms' },
-    { label: 'Testimonials', href: '#testimonials' },
-    { label: 'FAQ', href: '#faq' },
-  ]
-
   return (
     <AppBar position="sticky" elevation={0} sx={{
       background: '#0A0A0A',
@@ -54,31 +47,94 @@ export default function Navbar() {
 
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
             <Stack direction="row" spacing={2}>
-              {navItems.map((item) => (
-                <Button
-                  key={item.label}
-                  href={item.href}
-                  sx={{
-                    color: '#FFFFFF',
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    textTransform: 'none',
-                    background: 'none',
-                    borderRadius: 2,
-                    px: 2,
-                    border: '1px solid transparent',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      background: 'rgba(0,255,255,0.1)',
-                      border: '1px solid rgba(0,255,255,0.5)',
-                      boxShadow: '0 0 15px rgba(0,255,255,0.3)',
-                      color: '#00FFFF',
-                    },
-                  }}
-                >
-                  {item.label}
-                </Button>
-              ))}
+              <Button
+                href="/#how-it-works"
+                sx={{
+                  color: '#FFFFFF',
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  textTransform: 'none',
+                  background: 'none',
+                  borderRadius: 2,
+                  px: 2,
+                  border: '1px solid transparent',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    background: 'rgba(0,255,255,0.1)',
+                    border: '1px solid rgba(0,255,255,0.5)',
+                    boxShadow: '0 0 15px rgba(0,255,255,0.3)',
+                    color: '#00FFFF',
+                  },
+                }}
+              >
+                How It Works
+              </Button>
+              <Button
+                href="/#platforms"
+                sx={{
+                  color: '#FFFFFF',
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  textTransform: 'none',
+                  background: 'none',
+                  borderRadius: 2,
+                  px: 2,
+                  border: '1px solid transparent',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    background: 'rgba(0,255,255,0.1)',
+                    border: '1px solid rgba(0,255,255,0.5)',
+                    boxShadow: '0 0 15px rgba(0,255,255,0.3)',
+                    color: '#00FFFF',
+                  },
+                }}
+              >
+                Platforms
+              </Button>
+              <Button
+                href="/#testimonials"
+                sx={{
+                  color: '#FFFFFF',
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  textTransform: 'none',
+                  background: 'none',
+                  borderRadius: 2,
+                  px: 2,
+                  border: '1px solid transparent',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    background: 'rgba(0,255,255,0.1)',
+                    border: '1px solid rgba(0,255,255,0.5)',
+                    boxShadow: '0 0 15px rgba(0,255,255,0.3)',
+                    color: '#00FFFF',
+                  },
+                }}
+              >
+                Testimonials
+              </Button>
+              <Button
+                href="/#faq"
+                sx={{
+                  color: '#FFFFFF',
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  textTransform: 'none',
+                  background: 'none',
+                  borderRadius: 2,
+                  px: 2,
+                  border: '1px solid transparent',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    background: 'rgba(0,255,255,0.1)',
+                    border: '1px solid rgba(0,255,255,0.5)',
+                    boxShadow: '0 0 15px rgba(0,255,255,0.3)',
+                    color: '#00FFFF',
+                  },
+                }}
+              >
+                FAQ
+              </Button>
             </Stack>
           </Box>
 
@@ -97,13 +153,26 @@ export default function Navbar() {
               onClose={() => setDrawerOpen(false)}
             >
               <List sx={{ width: 250, background: '#0A0A0A', height: '100%' }}>
-                {navItems.map((item) => (
-                  <ListItem key={item.label} disablePadding>
-                    <ListItemButton component="a" href={item.href} onClick={() => setDrawerOpen(false)}>
-                      <ListItemText primary={item.label} sx={{ color: '#00FFFF', textAlign: 'center' }} />
-                    </ListItemButton>
-                  </ListItem>
-                ))}
+                <ListItem disablePadding>
+                  <ListItemButton component="a" href="/#how-it-works" onClick={() => setDrawerOpen(false)}>
+                    <ListItemText primary="How It Works" sx={{ color: '#00FFFF', textAlign: 'center' }} />
+                  </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton component="a" href="/#platforms" onClick={() => setDrawerOpen(false)}>
+                    <ListItemText primary="Platforms" sx={{ color: '#00FFFF', textAlign: 'center' }} />
+                  </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton component="a" href="/#testimonials" onClick={() => setDrawerOpen(false)}>
+                    <ListItemText primary="Testimonials" sx={{ color: '#00FFFF', textAlign: 'center' }} />
+                  </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton component="a" href="/#faq" onClick={() => setDrawerOpen(false)}>
+                    <ListItemText primary="FAQ" sx={{ color: '#00FFFF', textAlign: 'center' }} />
+                  </ListItemButton>
+                </ListItem>
                 <ListItem disablePadding>
                   {isLoggedIn ? (
                     <ListItemButton component={Link} to="/dashboard" onClick={() => setDrawerOpen(false)}>

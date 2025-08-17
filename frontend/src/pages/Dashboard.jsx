@@ -20,7 +20,8 @@ import {
   DialogActions,
   Tabs,
   Tab,
-  Tooltip
+  Tooltip,
+  TextField
 } from '@mui/material'
 import { 
   TrendingUp, 
@@ -34,7 +35,8 @@ import {
   Twitter,
   LinkedIn,
   Instagram,
-  Email
+  Email,
+  Refresh
 } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
@@ -54,6 +56,12 @@ export default function Dashboard() {
   const [contentDialogOpen, setContentDialogOpen] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
   const [copySuccess, setCopySuccess] = useState(false)
+  const [regenerateDialogOpen, setRegenerateDialogOpen] = useState(false)
+  const [regeneratingProduct, setRegeneratingProduct] = useState(null)
+  const [modificationRequest, setModificationRequest] = useState('')
+  const [imageModificationRequest, setImageModificationRequest] = useState('')
+  const [isRegenerating, setIsRegenerating] = useState(false)
+  const [regenerateSuccess, setRegenerateSuccess] = useState(false)
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -75,6 +83,7 @@ export default function Dashboard() {
         }
 
         const data = await response.json()
+        console.log('Dashboard data received:', data)
         setStats(data)
       } catch (err) {
         setError(err.message)
@@ -90,6 +99,19 @@ export default function Dashboard() {
 
     fetchDashboardData()
   }, [isLoggedIn])
+
+  useEffect(() => {
+    return () => {
+      setRegenerateDialogOpen(false)
+      setContentDialogOpen(false)
+      setRegeneratingProduct(null)
+      setSelectedProduct(null)
+    }
+  }, [])
+
+  useEffect(() => {
+    console.log('selectedProduct changed:', selectedProduct)
+  }, [selectedProduct])
 
   if (!isLoggedIn) {
     return (
@@ -136,6 +158,7 @@ export default function Dashboard() {
   }
 
   const handleContentClick = (product) => {
+    console.log('Opening content dialog for product:', product)
     setSelectedProduct(product)
     setContentDialogOpen(true)
     setActiveTab(0)
@@ -154,6 +177,108 @@ export default function Dashboard() {
     } catch (err) {
       console.error('Failed to copy text: ', err)
     }
+  }
+
+  const handleRegenerateClick = (product) => {
+    if (!product || !product._id) {
+      setError('Invalid product data for regeneration')
+      return
+    }
+    
+    setRegeneratingProduct(product)
+    setModificationRequest('')
+    setImageModificationRequest('')
+    
+    setContentDialogOpen(false)
+    setTimeout(() => {
+      setRegenerateDialogOpen(true)
+    }, 100)
+  }
+
+  const handleRegenerate = async () => {
+    if (!modificationRequest.trim() && !imageModificationRequest.trim()) {
+      setError('Please specify what modifications you want in either the promotional text or the image.')
+      return
+    }
+
+    if (!regeneratingProduct || !regeneratingProduct._id) {
+      setError('Invalid product data for regeneration')
+      return
+    }
+
+    setIsRegenerating(true)
+    setError(null)
+
+    try {
+      const token = localStorage.getItem('token')
+      
+      console.log('Regenerating product:', regeneratingProduct._id, 'with text modifications:', modificationRequest, 'and image modifications:', imageModificationRequest)
+      
+      const regenerateResponse = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/products/${regeneratingProduct._id}/regenerate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          modificationRequest: modificationRequest.trim(),
+          imageModificationRequest: imageModificationRequest.trim()
+        }),
+      })
+
+      if (!regenerateResponse.ok) {
+        const errorText = await regenerateResponse.text()
+        console.error('Regeneration failed:', regenerateResponse.status, errorText)
+        
+        let errorMessage = 'Failed to regenerate content'
+        try {
+          const errorData = JSON.parse(errorText)
+          errorMessage = errorData.error || errorMessage
+        } catch (e) {
+          errorMessage = `Server error: ${regenerateResponse.status}`
+        }
+        
+        throw new Error(errorMessage)
+      }
+
+      const regenerateData = await regenerateResponse.json()
+      console.log('Regeneration successful:', regenerateData)
+      
+      setStats(prevStats => ({
+        ...prevStats,
+        recentProducts: prevStats.recentProducts.map(product => 
+          product._id === regeneratingProduct._id 
+            ? regenerateData.product 
+            : product
+        )
+      }))
+
+      if (selectedProduct && selectedProduct._id === regeneratingProduct._id) {
+        setSelectedProduct(regenerateData.product)
+      }
+
+      setRegenerateSuccess(true)
+      setRegenerateDialogOpen(false)
+      setRegeneratingProduct(null)
+      setModificationRequest('')
+      setImageModificationRequest('')
+      
+      setTimeout(() => setRegenerateSuccess(false), 5000)
+    } catch (err) {
+      console.error('Regeneration error:', err)
+      setError(err.message)
+    } finally {
+      setIsRegenerating(false)
+    }
+  }
+
+  const handleCloseRegenerate = () => {
+    setRegenerateDialogOpen(false)
+    setTimeout(() => {
+      setRegeneratingProduct(null)
+      setModificationRequest('')
+      setImageModificationRequest('')
+    }, 150)
   }
 
   return (
@@ -199,6 +324,21 @@ export default function Dashboard() {
             onClose={() => setCopySuccess(false)}
           >
             Content copied to clipboard successfully!
+          </Alert>
+        )}
+
+        {regenerateSuccess && (
+          <Alert 
+            severity="success" 
+            sx={{ 
+              mb: 3,
+              background: 'rgba(255,0,255,0.1)',
+              border: '1px solid #FF00FF',
+              color: '#FF00FF'
+            }}
+            onClose={() => setRegenerateSuccess(false)}
+          >
+            Content regenerated successfully! Check the updated content below.
           </Alert>
         )}
         
@@ -439,6 +579,17 @@ export default function Dashboard() {
                   <Tab label="Product Details" />
                 </Tabs>
 
+                <Box sx={{ 
+                  p: 2, 
+                  background: 'rgba(255,0,255,0.05)', 
+                  borderBottom: '1px solid rgba(255,0,255,0.2)',
+                  textAlign: 'center'
+                }}>
+                  <Typography variant="body2" sx={{ color: '#FF00FF', fontStyle: 'italic' }}>
+                    💡 Need changes? Use the "Regenerate Content" button below to modify your promotional text!
+                  </Typography>
+                </Box>
+
                 {activeTab === 0 && (
                   <Box sx={{ p: 3 }}>
                     {selectedProduct?.multiPlatformContent ? (
@@ -463,11 +614,11 @@ export default function Dashboard() {
                               </IconButton>
                             </Box>
                             {selectedProduct.multiPlatformContent.reddit.title && (
-                              <Typography variant="subtitle1" sx={{ color: '#FFFFFF', fontWeight: 'bold', mb: 2 }}>
+                              <Typography variant="subtitle1" sx={{ color: '#FFFFFF', fontWeight: 'bold', mb: 2, fontFamily: 'Arial, sans-serif' }}>
                                 {selectedProduct.multiPlatformContent.reddit.title}
                               </Typography>
                             )}
-                            <Typography variant="body2" sx={{ color: '#FFFFFF', whiteSpace: 'pre-wrap' }}>
+                            <Typography variant="body2" sx={{ color: '#FFFFFF', whiteSpace: 'pre-wrap', fontFamily: 'Arial, sans-serif' }}>
                               {selectedProduct.multiPlatformContent.reddit.post}
                             </Typography>
                           </Paper>
@@ -492,7 +643,7 @@ export default function Dashboard() {
                             </Box>
                             {selectedProduct.multiPlatformContent.twitter.thread.map((tweet, index) => (
                               <Box key={index} sx={{ mb: 2, p: 2, background: '#0A0A0A', borderRadius: 1 }}>
-                                <Typography variant="body2" sx={{ color: '#FFFFFF', whiteSpace: 'pre-wrap' }}>
+                                <Typography variant="body2" sx={{ color: '#FFFFFF', whiteSpace: 'pre-wrap', fontFamily: 'Arial, sans-serif' }}>
                                   {tweet}
                                 </Typography>
                               </Box>
@@ -517,7 +668,7 @@ export default function Dashboard() {
                                 <ContentCopy />
                               </IconButton>
                             </Box>
-                            <Typography variant="body2" sx={{ color: '#FFFFFF', whiteSpace: 'pre-wrap' }}>
+                            <Typography variant="body2" sx={{ color: '#FFFFFF', whiteSpace: 'pre-wrap', fontFamily: 'Arial, sans-serif' }}>
                               {selectedProduct.multiPlatformContent.linkedin}
                             </Typography>
                           </Paper>
@@ -540,7 +691,7 @@ export default function Dashboard() {
                                 <ContentCopy />
                               </IconButton>
                             </Box>
-                            <Typography variant="body2" sx={{ color: '#FFFFFF', whiteSpace: 'pre-wrap' }}>
+                            <Typography variant="body2" sx={{ color: '#FFFFFF', whiteSpace: 'pre-wrap', fontFamily: 'Arial, sans-serif' }}>
                               {selectedProduct.multiPlatformContent.instagram}
                             </Typography>
                           </Paper>
@@ -566,14 +717,59 @@ export default function Dashboard() {
                               </IconButton>
                             </Box>
                             {selectedProduct.multiPlatformContent.email.subject && (
-                              <Typography variant="subtitle1" sx={{ color: '#FFFFFF', fontWeight: 'bold', mb: 2 }}>
+                              <Typography variant="subtitle1" sx={{ color: '#FFFFFF', fontWeight: 'bold', mb: 2, fontFamily: 'Arial, sans-serif' }}>
                                 Subject: {selectedProduct.multiPlatformContent.email.subject}
                               </Typography>
                             )}
-                            <Typography variant="body2" sx={{ color: '#FFFFFF', whiteSpace: 'pre-wrap' }}>
+                            <Typography variant="body2" sx={{ color: '#FFFFFF', whiteSpace: 'pre-wrap', fontFamily: 'Arial, sans-serif' }}>
                               {selectedProduct.multiPlatformContent.email.body}
                             </Typography>
                           </Paper>
+                        )}
+
+                        {/*Generated Image*/}
+                        {selectedProduct?.generatedImage?.url && (
+                          <Box sx={{ 
+                            mt: 4, 
+                            textAlign: 'center',
+                            p: 3,
+                            background: 'linear-gradient(135deg, rgba(255,0,255,0.05) 0%, rgba(0,255,255,0.05) 100%)',
+                            borderRadius: '12px',
+                            border: '1px solid rgba(255,0,255,0.3)'
+                          }}>
+                            <Typography variant="h6" sx={{ color: '#FF00FF', mb: 2, fontWeight: 600 }}>
+                              🎨 Generated Promotional Image
+                            </Typography>
+                            
+                            <Box sx={{ 
+                              display: 'flex', 
+                              justifyContent: 'center', 
+                              mb: 2,
+                              position: 'relative'
+                            }}>
+                              <Box
+                                component="img"
+                                src={selectedProduct.generatedImage.url}
+                                alt="Generated promotional image"
+                                sx={{
+                                  maxWidth: '100%',
+                                  maxHeight: '300px',
+                                  borderRadius: '8px',
+                                  border: '1px solid rgba(255,0,255,0.5)',
+                                  boxShadow: '0 0 20px rgba(255,0,255,0.3)'
+                                }}
+                              />
+                            </Box>
+                            
+                            <Typography variant="caption" sx={{ color: '#CCCCCC', display: 'block', mb: 2 }}>
+                              Format: {selectedProduct.generatedImage.format?.toUpperCase()} | 
+                              Size: {(selectedProduct.generatedImage.size / 1024).toFixed(1)} KB
+                            </Typography>
+                            
+                            <Typography variant="body2" sx={{ color: '#CCCCCC', fontStyle: 'italic' }}>
+                                Input: "{selectedProduct.generatedImage.prompt}"
+                              </Typography>
+                          </Box>
                         )}
 
                         {/*No content fallback*/}
@@ -656,6 +852,14 @@ export default function Dashboard() {
                       </Box>
                       <Box>
                         <Typography variant="body2" sx={{ color: '#00FFFF', fontWeight: 'bold' }}>
+                          Image Prompt:
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#FFFFFF' }}>
+                          {selectedProduct?.imagePrompt || 'No image prompt provided'}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" sx={{ color: '#00FFFF', fontWeight: 'bold' }}>
                           Created:
                         </Typography>
                         <Typography variant="body2" sx={{ color: '#FFFFFF' }}>
@@ -666,9 +870,39 @@ export default function Dashboard() {
                   </Box>
                 )}
               </DialogContent>
-              <DialogActions sx={{ background: '#1A1A1A', borderTop: '1px solid rgba(0,255,255,0.3)' }}>
+              <DialogActions sx={{ background: '#1A1A1A', borderTop: '1px solid rgba(0,255,255,0.3)', p: 2 }}>
+                {selectedProduct && selectedProduct._id ? (
+                  <Button 
+                    onClick={() => handleRegenerateClick(selectedProduct)}
+                    disabled={isRegenerating}
+                    startIcon={isRegenerating ? <CircularProgress size={16} sx={{ color: '#FF00FF' }} /> : <Refresh />}
+                    variant="contained"
+                    size="large"
+                    sx={{ 
+                      background: 'linear-gradient(45deg, #FF00FF, #8000FF)',
+                      color: '#FFFFFF',
+                      border: '2px solid #FF00FF',
+                      fontWeight: 600,
+                      px: 4,
+                      py: 1.5,
+                      mr: 2,
+                      '&:hover': {
+                        background: 'linear-gradient(45deg, #8000FF, #FF00FF)',
+                        boxShadow: '0 0 20px rgba(255,0,255,0.6)'
+                      }
+                    }}
+                  >
+                    {isRegenerating ? 'Regenerating...' : '🔄 Regenerate Content'}
+                  </Button>
+                ) : (
+                  <Typography variant="caption" sx={{ color: '#FF0000', mr: 2 }}>
+                    No product selected or missing ID
+                  </Typography>
+                )}
+                
                 <Button 
                   onClick={handleCloseContent} 
+                  variant="outlined"
                   sx={{ 
                     color: '#00FFFF',
                     border: '1px solid #00FFFF',
@@ -678,6 +912,146 @@ export default function Dashboard() {
                   }}
                 >
                   Close
+                </Button>
+              </DialogActions>
+            </Dialog>
+
+            <Dialog 
+              open={regenerateDialogOpen && !!regeneratingProduct} 
+              onClose={handleCloseRegenerate} 
+              maxWidth="sm" 
+              fullWidth
+            >
+              <DialogTitle sx={{ 
+                background: '#1A1A1A', 
+                color: '#FF00FF',
+                borderBottom: '1px solid rgba(255,0,255,0.3)'
+              }}>
+                🔄 Regenerate Content for {regeneratingProduct?.name}
+              </DialogTitle>
+              <DialogContent sx={{ background: '#0A0A0A', p: 3 }}>
+                <Typography variant="body1" sx={{ 
+                  color: '#CCCCCC', 
+                  mb: 3,
+                  textAlign: 'center'
+                }}>
+                  Tell us what modifications you want in your promotional text. We'll regenerate content for all platforms based on your feedback.
+                </Typography>
+
+                <TextField
+                  label="What modifications do you want in the promotional text?"
+                  multiline
+                  rows={3}
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={modificationRequest}
+                  onChange={(e) => setModificationRequest(e.target.value)}
+                  placeholder="e.g., Make it more casual and friendly, Add more technical details, Focus on the problem-solving aspect, Make it shorter, etc."
+                  sx={{
+                    background: '#1A1A1A',
+                    borderRadius: '8px',
+                    mb: 3,
+                    textarea: { 
+                      color: '#FFFFFF', 
+                      fontWeight: 500,
+                      fontFamily: 'Arial, sans-serif'
+                    },
+                    label: { 
+                      color: '#00FFFF',
+                      fontWeight: 600
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': { 
+                        borderColor: 'rgba(0,255,255,0.5)',
+                        borderWidth: '2px'
+                      },
+                      '&:hover fieldset': { 
+                        borderColor: '#00FFFF',
+                        boxShadow: '0 0 10px rgba(0,255,255,0.3)'
+                      },
+                      '&.Mui-focused fieldset': { 
+                        borderColor: '#00FFFF',
+                        boxShadow: '0 0 15px rgba(0,255,255,0.5)'
+                      },
+                    },
+                  }}
+                />
+
+                <TextField
+                  label="What modifications do you want in the generated image?"
+                  multiline
+                  rows={3}
+                  variant="outlined"
+                  fullWidth
+                  value={imageModificationRequest}
+                  onChange={(e) => setImageModificationRequest(e.target.value)}
+                  placeholder="e.g., Make it more colorful, Add more people, Change the style to minimalist, Make it more futuristic, etc."
+                  sx={{
+                    background: '#1A1A1A',
+                    borderRadius: '8px',
+                    mb: 3,
+                    textarea: { 
+                      color: '#FFFFFF', 
+                      fontWeight: 500,
+                      fontFamily: 'Arial, sans-serif'
+                    },
+                    label: { 
+                      color: '#FF00FF',
+                      fontWeight: 600
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': { 
+                        borderColor: 'rgba(255,0,255,0.5)',
+                        borderWidth: '2px'
+                      },
+                      '&:hover fieldset': { 
+                        borderColor: '#FF00FF',
+                        boxShadow: '0 0 10px rgba(255,0,255,0.3)'
+                      },
+                      '&.Mui-focused fieldset': { 
+                        borderColor: '#FF00FF',
+                        boxShadow: '0 0 15px rgba(255,0,255,0.5)'
+                      },
+                    },
+                  }}
+                />
+              </DialogContent>
+              <DialogActions sx={{ background: '#1A1A1A', borderTop: '1px solid rgba(255,0,255,0.3)' }}>
+                <Button 
+                  onClick={handleCloseRegenerate}
+                  disabled={isRegenerating}
+                  sx={{ 
+                    color: '#00FFFF',
+                    border: '1px solid #00FFFF',
+                    '&:hover': {
+                      background: 'rgba(0,255,255,0.1)'
+                    }
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  variant="contained"
+                  onClick={handleRegenerate}
+                  disabled={isRegenerating || !modificationRequest.trim() || !regeneratingProduct?._id}
+                  endIcon={isRegenerating ? <CircularProgress size={20} sx={{ color: '#FFFFFF' }} /> : null}
+                  sx={{
+                    background: 'linear-gradient(45deg, #FF00FF, #8000FF)',
+                    color: '#FFFFFF',
+                    border: '2px solid #FF00FF',
+                    '&:hover': {
+                      background: 'linear-gradient(45deg, #8000FF, #FF00FF)',
+                      boxShadow: '0 0 20px rgba(255,0,255,0.6)'
+                    },
+                    '&:disabled': {
+                      background: '#333333',
+                      color: '#666666',
+                      border: '2px solid #666666'
+                    }
+                  }}
+                >
+                  {isRegenerating ? 'Regenerating...' : 'Regenerate Content'}
                 </Button>
               </DialogActions>
             </Dialog>

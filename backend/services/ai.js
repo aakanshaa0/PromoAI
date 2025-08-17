@@ -1,5 +1,7 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
+const { GoogleGenAI } = require("@google/genai");
+const ai = new GoogleGenAI({
+  apiKey: process.env.GOOGLE_AI_API_KEY
+});
 
 exports.generateMultiPlatformPromo = async (product) => {
   try {
@@ -9,14 +11,20 @@ exports.generateMultiPlatformPromo = async (product) => {
       throw new Error('GOOGLE_AI_API_KEY is not set');
     }
     
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = "gemini-2.0-flash";
     
-    const prompt = `Generate promotional content for a ${product.categories.join('/')} product across multiple platforms. Create engaging, platform-appropriate content for each:
+    let prompt = `Generate promotional content for a ${product.categories.join('/')} product across multiple platforms. Create engaging, platform-appropriate content for each:
 
   Product: ${product.name}
   Description: ${product.description}
   URL: ${product.url}
-  Contact: ${product.contact || 'Not provided'}
+  Contact: ${product.contact || 'Not provided'}`;
+
+    if (product.modificationRequest) {
+      prompt += `\n\n  MODIFICATION REQUEST: ${product.modificationRequest}\n\n  Please incorporate these specific changes into the generated content while maintaining the same product information.`;
+    }
+
+    prompt += `
 
   Generate content for these platforms:
 
@@ -83,9 +91,16 @@ exports.generateMultiPlatformPromo = async (product) => {
   - Focus on community benefit, not just self-promotion
   - Make each platform version unique and appropriate`;
 
+    if (product.modificationRequest) {
+      prompt += `\n\n  REMEMBER: The user specifically requested these modifications: ${product.modificationRequest}. Make sure to incorporate these changes in all platform content.`;
+    }
+
     console.log('Sending prompt to AI...');
-    const result = await model.generateContent(prompt);
-    const response = result.response.text().trim();
+    const result = await ai.models.generateContent({
+      model: model,
+      contents: prompt
+    });
+    const response = result.candidates[0].content.parts[0].text.trim();
     console.log('AI Response received, length:', response.length);
     console.log('AI Response preview:', response.substring(0, 200) + '...');
     

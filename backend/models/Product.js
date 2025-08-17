@@ -69,6 +69,27 @@ const ProductSchema = new Schema({
     }
   },
 
+  imagePrompt: {
+    type: String,
+    trim: true,
+    maxlength: [500, 'Image prompt cannot exceed 500 characters']
+  },
+  generatedImage: {
+    url: String,
+    public_id: String,
+    format: String,
+    size: Number,
+    prompt: String,
+    generatedAt: {
+      type: Date,
+      default: Date.now
+    }
+  },
+  imageGenerationError: {
+    type: String,
+    trim: true
+  },
+
   userId: {
     type: Schema.Types.ObjectId,
     ref: 'User',
@@ -96,5 +117,4 @@ ProductSchema.index({
   categories: 'text'
 });
 
-const Product = model('Product', ProductSchema);
-module.exports = Product;
+module.exports = model('Product', ProductSchema);

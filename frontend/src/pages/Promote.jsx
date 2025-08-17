@@ -180,9 +180,9 @@ const ContentSection = ({ title, content, platform, onCopy }) => {
         p: { xs: 2, md: 3 }, 
         borderRadius: '8px',
         border: '1px solid rgba(0,255,255,0.3)',
-        fontFamily: 'monospace',
-        fontSize: { xs: '13px', md: '15px' },
-        lineHeight: '1.8',
+        fontFamily: 'Arial, sans-serif',
+        fontSize: { xs: '14px', md: '16px' },
+        lineHeight: '1.6',
         whiteSpace: 'pre-wrap',
         wordBreak: 'break-word',
         overflowWrap: 'break-word',
@@ -203,6 +203,7 @@ const ContentSection = ({ title, content, platform, onCopy }) => {
             margin: 0,
             color: '#FFFFFF',
             fontWeight: 400,
+            fontFamily: 'Arial, sans-serif',
             textShadow: '0 0 2px rgba(255,255,255,0.3)',
             whiteSpace: 'pre-wrap',
             wordBreak: 'break-word',
@@ -225,10 +226,15 @@ export default function Promote() {
   const [error, setError] = useState(null)
   const [currentProduct, setCurrentProduct] = useState(null)
   const [copyCount, setCopyCount] = useState(0)
+  const [showRegenerateForm, setShowRegenerateForm] = useState(false)
+  const [isRegenerating, setIsRegenerating] = useState(false)
+  const [modificationRequest, setModificationRequest] = useState('')
+  const [successMessage, setSuccessMessage] = useState(null)
 
   const handleSubmit = async (productData) => {
     setIsSubmitting(true)
     setError(null)
+    setSuccessMessage(null)
     setShowContent(false)
     setGeneratedContent(null)
     setCopyCount(0)
@@ -247,7 +253,8 @@ export default function Promote() {
           description: productData.description,
           url: productData.url,
           contact: productData.contact,
-          categories: productData.categories
+          categories: productData.categories,
+          imagePrompt: productData.imagePrompt
         }),
       })
 
@@ -269,6 +276,50 @@ export default function Promote() {
 
   const handleCopy = () => {
     setCopyCount(prev => prev + 1)
+  }
+
+  const handleRegenerate = async () => {
+    if (!modificationRequest.trim()) {
+      setError('Please specify what modifications you want in the promotional text.')
+      return
+    }
+
+    setIsRegenerating(true)
+    setError(null)
+    setSuccessMessage(null)
+
+    try {
+      const token = localStorage.getItem('token')
+      
+      const regenerateResponse = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/products/${currentProduct._id}/regenerate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          modificationRequest: modificationRequest.trim()
+        }),
+      })
+
+      if (!regenerateResponse.ok) {
+        const data = await regenerateResponse.json()
+        throw new Error(data.error || 'Failed to regenerate content')
+      }
+
+      const regenerateData = await regenerateResponse.json()
+      setGeneratedContent(regenerateData.product.multiPlatformContent)
+      setCurrentProduct(regenerateData.product)
+      setShowRegenerateForm(false)
+      setModificationRequest('')
+      setCopyCount(0)
+      setSuccessMessage(regenerateData.message || 'Content regenerated successfully!')
+      setTimeout(() => setSuccessMessage(null), 5000)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setIsRegenerating(false)
+    }
   }
 
   const getPlatformDisplayName = (platform) => {
@@ -312,6 +363,20 @@ export default function Promote() {
           </Alert>
         )}
 
+        {successMessage && (
+          <Alert severity="success" sx={{ 
+            mb: 3,
+            background: 'rgba(0,255,0,0.1)',
+            border: '1px solid rgba(0,255,0,0.5)',
+            color: '#00FF00',
+            '& .MuiAlert-icon': {
+              color: '#00FF00'
+            }
+          }}>
+            {successMessage}
+          </Alert>
+        )}
+
         {!generatedContent ? (
           <Fade in={!generatedContent} timeout={700}>
             <Box sx={{ maxWidth: { xs: '100%', md: '800px' }, width: '100%', mx: 'auto' }}>
@@ -341,7 +406,7 @@ export default function Promote() {
                   textAlign: 'left'
                 }}>
                   <Typography variant="h6" sx={{ color: '#FF00FF', mb: 2, fontWeight: 600 }}>
-                    📦 Product: {currentProduct?.name}
+                    Product: {currentProduct?.name}
                   </Typography>
                   <Typography variant="body2" sx={{ color: '#CCCCCC', mb: 2 }}>
                     {currentProduct?.description}
@@ -365,7 +430,7 @@ export default function Promote() {
 
                 <Box sx={{ textAlign: 'center', mb: 6 }}>
                   <Typography variant="h4" sx={{ color: '#00FFFF', mb: 3, fontWeight: 700 }}>
-                    🎉 Your Content Pack is Ready!
+                    Your Content Pack is Ready!
                   </Typography>
                   <Typography variant="h6" sx={{ color: '#FFFFFF', mb: 3, fontWeight: 500 }}>
                     Generated content for all platforms
@@ -543,6 +608,97 @@ export default function Promote() {
                   }} />
                 </Box>
                 
+                {currentProduct?.generatedImage?.url && (
+                  <Box sx={{ 
+                    mt: 6, 
+                    textAlign: 'center',
+                    p: 4,
+                    background: 'linear-gradient(135deg, rgba(255,0,255,0.05) 0%, rgba(0,255,255,0.05) 100%)',
+                    borderRadius: '16px',
+                    border: '1px solid rgba(255,0,255,0.3)'
+                  }}>
+                    <Typography variant="h5" sx={{ color: '#FF00FF', mb: 3, fontWeight: 700 }}>
+                      Generated Promotional Image
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#CCCCCC', mb: 3, maxWidth: '600px', mx: 'auto' }}>
+                      Based on your description: "{currentProduct.imagePrompt}"
+                    </Typography>
+                    
+                    <Box sx={{ 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      mb: 3,
+                      position: 'relative'
+                    }}>
+                      <Box
+                        component="img"
+                        src={currentProduct.generatedImage.url}
+                        alt="Generated promotional image"
+                        sx={{
+                          maxWidth: '100%',
+                          maxHeight: '400px',
+                          borderRadius: '12px',
+                          border: '2px solid rgba(255,0,255,0.5)',
+                          boxShadow: '0 0 30px rgba(255,0,255,0.3)',
+                          '&:hover': {
+                            transform: 'scale(1.02)',
+                            boxShadow: '0 0 40px rgba(255,0,255,0.5)',
+                            transition: 'all 0.3s ease'
+                          }
+                        }}
+                      />
+                    </Box>
+                    
+                    <Box sx={{ mb: 3 }}>
+                      <Typography variant="caption" sx={{ color: '#CCCCCC', display: 'block', mb: 1 }}>
+                        Format: {currentProduct.generatedImage.format?.toUpperCase()} | 
+                        Size: {(currentProduct.generatedImage.size / 1024).toFixed(1)} KB
+                      </Typography>
+                    </Box>
+                    
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        const link = document.createElement('a');
+                        link.href = currentProduct.generatedImage.url;
+                        link.download = `promotional-image-${currentProduct.name.replace(/\s+/g, '-').toLowerCase()}.${currentProduct.generatedImage.format}`;
+                        link.click();
+                      }}
+                      sx={{
+                        borderColor: '#FF00FF',
+                        color: '#FF00FF',
+                        '&:hover': {
+                          borderColor: '#FF00FF',
+                          background: 'rgba(255,0,255,0.1)'
+                        }
+                      }}
+                    >
+                      Download Image
+                    </Button>
+                  </Box>
+                )}
+
+                {currentProduct?.imageGenerationError && (
+                  <Box sx={{ 
+                    mt: 6, 
+                    textAlign: 'center',
+                    p: 4,
+                    background: 'linear-gradient(135deg, rgba(255,0,0,0.05) 0%, rgba(255,165,0,0.05) 100%)',
+                    borderRadius: '16px',
+                    border: '1px solid rgba(255,0,0,0.3)'
+                  }}>
+                    <Typography variant="h6" sx={{ color: '#FF0000', mb: 2, fontWeight: 600 }}>
+                      Image Generation Issue
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#CCCCCC', mb: 2 }}>
+                      {currentProduct.imageGenerationError}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: '#FFA500', fontStyle: 'italic' }}>
+                      The promotional content was generated successfully, but there was an issue with image generation.
+                    </Typography>
+                  </Box>
+                )}
+
                 <Box sx={{ 
                   mt: 8, 
                   textAlign: 'center',
@@ -620,18 +776,147 @@ export default function Promote() {
                     onClick={() => {
                       setGeneratedContent(null)
                       setShowContent(false)
-                    setCurrentProduct(null)
+                      setCurrentProduct(null)
                       setCopyCount(0)
-                  }}
-                  sx={{
-                    borderColor: '#00FFFF',
-                    color: '#00FFFF',
-                    '&:hover': { borderColor: '#00FFFF' }
-                  }}
-                >
+                      setShowRegenerateForm(false)
+                      setSuccessMessage(null)
+                      setError(null)
+                    }}
+                    sx={{
+                      borderColor: '#00FFFF',
+                      color: '#00FFFF',
+                      '&:hover': { borderColor: '#00FFFF' }
+                    }}
+                  >
                     Generate New Content
-                </Button>
+                  </Button>
+                  
+                  <Button 
+                    variant="contained" 
+                    onClick={() => setShowRegenerateForm(true)}
+                    sx={{
+                      background: 'linear-gradient(45deg, #FF00FF, #8000FF)',
+                      color: '#FFFFFF',
+                      border: '2px solid #FF00FF',
+                      '&:hover': {
+                        background: 'linear-gradient(45deg, #8000FF, #FF00FF)',
+                        boxShadow: '0 0 20px rgba(255,0,255,0.6)'
+                      }
+                    }}
+                  >
+                    Regenerate Content
+                  </Button>
                 </Box>
+
+                {showRegenerateForm && (
+                  <Fade in={showRegenerateForm} timeout={500}>
+                    <Paper elevation={6} sx={{
+                      mt: 4,
+                      p: 4,
+                      borderRadius: '12px',
+                      background: 'linear-gradient(135deg, rgba(255,0,255,0.1) 0%, rgba(0,255,255,0.1) 100%)',
+                      border: '2px solid rgba(255,0,255,0.5)',
+                      boxShadow: '0 0 30px rgba(255,0,255,0.3)'
+                    }}>
+                      <Typography variant="h6" sx={{ 
+                        color: '#FF00FF', 
+                        mb: 3, 
+                        fontWeight: 600,
+                        textAlign: 'center'
+                      }}>
+                        Regenerate Promotional Content
+                      </Typography>
+                      
+                      <Typography variant="body1" sx={{ 
+                        color: '#CCCCCC', 
+                        mb: 3,
+                        textAlign: 'center'
+                      }}>
+                        Tell us what modifications you want in your promotional text. We'll regenerate content for all platforms based on your feedback.
+                      </Typography>
+
+                      <TextField
+                        label="What modifications do you want?"
+                        multiline
+                        rows={4}
+                        variant="outlined"
+                        fullWidth
+                        required
+                        value={modificationRequest}
+                        onChange={(e) => setModificationRequest(e.target.value)}
+                        placeholder="e.g., Make it more casual and friendly, Add more technical details, Focus on the problem-solving aspect, Make it shorter, etc."
+                        sx={{
+                          background: '#0A0A0A',
+                          borderRadius: '8px',
+                          mb: 3,
+                          textarea: { 
+                            color: '#FFFFFF', 
+                            fontWeight: 500,
+                            fontFamily: 'Arial, sans-serif'
+                          },
+                          label: { 
+                            color: '#00FFFF',
+                            fontWeight: 600
+                          },
+                          '& .MuiOutlinedInput-root': {
+                            '& fieldset': { 
+                              borderColor: 'rgba(0,255,255,0.5)',
+                              borderWidth: '2px'
+                            },
+                            '&:hover fieldset': { 
+                              borderColor: '#00FFFF',
+                              boxShadow: '0 0 10px rgba(0,255,255,0.3)'
+                            },
+                            '&.Mui-focused fieldset': { 
+                              borderColor: '#00FFFF',
+                              boxShadow: '0 0 15px rgba(0,255,255,0.5)'
+                            },
+                          },
+                        }}
+                      />
+
+                      <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+                        <Button 
+                          variant="outlined" 
+                          onClick={() => {
+                            setShowRegenerateForm(false)
+                            setModificationRequest('')
+                          }}
+                          sx={{
+                            borderColor: '#00FFFF',
+                            color: '#00FFFF',
+                            '&:hover': { borderColor: '#00FFFF' }
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        
+                        <Button 
+                          variant="contained" 
+                          onClick={handleRegenerate}
+                          disabled={isRegenerating || !modificationRequest.trim()}
+                          endIcon={isRegenerating ? <CircularProgress size={20} sx={{ color: '#FFFFFF' }} /> : null}
+                          sx={{
+                            background: 'linear-gradient(45deg, #FF00FF, #8000FF)',
+                            color: '#FFFFFF',
+                            border: '2px solid #FF00FF',
+                            '&:hover': {
+                              background: 'linear-gradient(45deg, #8000FF, #FF00FF)',
+                              boxShadow: '0 0 20px rgba(255,0,255,0.6)'
+                            },
+                            '&:disabled': {
+                              background: '#333333',
+                              color: '#666666',
+                              border: '2px solid #666666'
+                            }
+                          }}
+                        >
+                          {isRegenerating ? 'Regenerating...' : 'Regenerate Content'}
+                        </Button>
+                      </Box>
+                    </Paper>
+                  </Fade>
+                )}
               </Box>
           </Box>
           </Fade>

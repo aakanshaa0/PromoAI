@@ -13,14 +13,17 @@ const getDashboardData = async (req, res) => {
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 10)
       .map(product => ({
-        id: product._id,
+        _id: product._id,
         name: product.name,
         description: product.description,
         url: product.url,
         contact: product.contact,
         categories: product.categories,
         createdAt: product.createdAt,
-        multiPlatformContent: product.multiPlatformContent
+        multiPlatformContent: product.multiPlatformContent,
+        imagePrompt: product.imagePrompt,
+        generatedImage: product.generatedImage,
+        imageGenerationError: product.imageGenerationError
       }));
 
     res.json({
