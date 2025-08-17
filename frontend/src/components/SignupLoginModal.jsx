@@ -28,24 +28,20 @@ export default function SignupLoginModal({ open, onClose, initialMode = 'login' 
   const captchaRef = useRef(null)
   const { login } = useContext(AuthContext)
 
-  // Update mode when initialMode prop changes
   useEffect(() => {
     setMode(initialMode)
     setError(null)
     setCaptchaToken('')
   }, [initialMode])
 
-  // Initialize reCAPTCHA
   useEffect(() => {
-    // Load reCAPTCHA script if not already loaded
     if (!window.grecaptcha) {
       const script = document.createElement('script')
-      // Use the correct script URL format without render parameter
-      script.src = 'https://www.google.com/recaptcha/api.js'
+      script.src = 'https://www.google.com/recaptcha/api.js?render=explicit'
       script.async = true
       script.defer = true
       script.onload = () => {
-        console.log('reCAPTCHA script loaded successfully')
+        console.log('reCAPTCHA v2 script loaded successfully')
         setCaptchaLoaded(true)
       }
       script.onerror = (error) => {
@@ -84,7 +80,10 @@ export default function SignupLoginModal({ open, onClose, initialMode = 'login' 
             setError('CAPTCHA error occurred. Please try again.')
           },
           size: 'normal',
-          theme: 'dark'
+          theme: 'dark',
+          // Force full verification process
+          'data-badge': 'inline',
+          'data-type': 'image'
         })
       } catch (err) {
         console.error('Error rendering CAPTCHA:', err)
@@ -162,8 +161,11 @@ export default function SignupLoginModal({ open, onClose, initialMode = 'login' 
         }
         setTimeout(() => {
           if (open && mode === 'signup' && captchaRef.current) {
+            const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '6LfZJakrAAAAAF_oazf9-KDo-uTVPj0GoyhL-RHH';
+            console.log('🔄 Refreshing CAPTCHA with site key:', siteKey ? 'SET' : 'NOT SET');
+            
             window.grecaptcha.render(captchaRef.current, {
-              sitekey: import.meta.env.VITE_RECAPTCHA_SITE_KEY || '6LfZJakrAAAAAF_oazf9-KDo-uTVPj0GoyhL-RHH', // Use your actual key
+              sitekey: siteKey,
               callback: (token) => {
                 setCaptchaToken(token)
                 setError(null)
