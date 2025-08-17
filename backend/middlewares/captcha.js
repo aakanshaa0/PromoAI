@@ -1,8 +1,8 @@
 const Recaptcha = require('recaptcha2');
 
 const recaptcha = new Recaptcha({
-  siteKey: process.env.RECAPTCHA_SITE_KEY || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI',
-  secretKey: process.env.RECAPTCHA_SECRET_KEY || '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe',
+  siteKey: process.env.RECAPTCHA_SITE_KEY,
+  secretKey: process.env.RECAPTCHA_SECRET_KEY,
 });
 
 const verifyCaptcha = (req, res, next) => {

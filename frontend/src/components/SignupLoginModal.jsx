@@ -37,7 +37,7 @@ export default function SignupLoginModal({ open, onClose, initialMode = 'login' 
   useEffect(() => {
     if (!window.grecaptcha) {
       const script = document.createElement('script')
-      script.src = 'https://www.google.com/recaptcha/api.js?render=explicit'
+      script.src = 'https://www.google.com/recaptcha/api.js'
       script.async = true
       script.defer = true
       script.onload = () => {
@@ -81,9 +81,6 @@ export default function SignupLoginModal({ open, onClose, initialMode = 'login' 
           },
           size: 'normal',
           theme: 'dark',
-          // Force full verification process
-          'data-badge': 'inline',
-          'data-type': 'image'
         })
       } catch (err) {
         console.error('Error rendering CAPTCHA:', err)
