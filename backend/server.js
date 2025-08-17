@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const { connect } = require('mongoose');
 const cors = require('cors');
+const { generalRateLimit } = require('./middlewares/rateLimit');
 const authRoutes = require('./routes/auth.js');
 const productRoutes = require('./routes/product.js');
 const dashboardRoutes = require('./routes/dashboard.js');
@@ -21,6 +22,8 @@ connectToDB();
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+app.use(generalRateLimit);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);

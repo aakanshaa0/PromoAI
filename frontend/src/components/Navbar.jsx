@@ -11,7 +11,13 @@ export default function Navbar() {
   const { isLoggedIn, logout } = useContext(AuthContext)
   const location = useLocation()
   const [modalOpen, setModalOpen] = useState(false)
+  const [modalMode, setModalMode] = useState('login')
   const [drawerOpen, setDrawerOpen] = useState(false)
+
+  const handleOpenModal = (mode) => {
+    setModalMode(mode)
+    setModalOpen(true)
+  }
 
   return (
     <AppBar position="sticky" elevation={0} sx={{
@@ -386,7 +392,7 @@ export default function Navbar() {
               <>
                 <Button
                   variant="outlined"
-                  onClick={() => setModalOpen(true)}
+                  onClick={() => handleOpenModal('login')}
                   sx={{
                     textTransform: 'none',
                     borderRadius: '8px',
@@ -412,7 +418,7 @@ export default function Navbar() {
                 </Button>
                 <Button
                   variant="contained"
-                  onClick={() => setModalOpen(true)}
+                  onClick={() => handleOpenModal('signup')}
                   sx={{
                     textTransform: 'none',
                     borderRadius: '8px',
@@ -437,7 +443,7 @@ export default function Navbar() {
                 </Button>
               </>
             )}
-            <SignupLoginModal open={modalOpen} onClose={() => setModalOpen(false)} />
+            <SignupLoginModal open={modalOpen} onClose={() => setModalOpen(false)} initialMode={modalMode} />
           </Box>
         </Toolbar>
       </Container>

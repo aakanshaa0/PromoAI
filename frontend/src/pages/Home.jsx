@@ -22,6 +22,12 @@ export default function Home() {
   const navigate = useNavigate();
   const { isLoggedIn } = useContext(AuthContext)
   const [modalOpen, setModalOpen] = useState(false)
+  const [modalMode, setModalMode] = useState('login')
+
+  const handleOpenModal = (mode) => {
+    setModalMode(mode)
+    setModalOpen(true)
+  }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: (theme) => theme.palette.background.default }}>
@@ -92,7 +98,7 @@ export default function Home() {
                       if (isLoggedIn) {
                         navigate('/promote')
                       } else {
-                        setModalOpen(true)
+                        handleOpenModal('signup')
                       }
                     }}
                   >
@@ -233,8 +239,8 @@ export default function Home() {
               
               <Box sx={{
                 position: 'relative',
-                width: 400,
-                height: 300,
+                width: { xs: '100%', sm: 350, md: 400 },
+                height: { xs: 250, sm: 280, md: 300 },
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -254,28 +260,38 @@ export default function Home() {
                   flexDirection: 'column',
                   alignItems: 'flex-start',
                   justifyContent: 'flex-start',
-                  px: 3,
-                  pt: 3,
+                  px: { xs: 2, sm: 2.5, md: 3 },
+                  pt: { xs: 2, sm: 2.5, md: 3 },
                   pb: 2,
                 }}>
                   <Box sx={{
-                    width: 32,
-                    height: 32,
+                    width: { xs: 28, sm: 30, md: 32 },
+                    height: { xs: 28, sm: 30, md: 32 },
                     borderRadius: '10px',
                     bgcolor: '#23242a',
                     color: 'primary.main',
                     fontWeight: 700,
-                    fontSize: '1.1rem',
+                    fontSize: { xs: '1rem', sm: '1.05rem', md: '1.1rem' },
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     mb: 2,
                     boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
                   }}>2</Box>
-                  <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: '1.13rem', mb: 1 }}>
+                  <Typography sx={{ 
+                    color: '#fff', 
+                    fontWeight: 700, 
+                    fontSize: { xs: '1rem', sm: '1.1rem', md: '1.13rem' }, 
+                    mb: 1 
+                  }}>
                     AI generates platform-optimized content
                   </Typography>
-                  <Typography sx={{ color: '#bdbdbd', fontWeight: 400, fontSize: '1.01rem', lineHeight: 1.5 }}>
+                  <Typography sx={{ 
+                    color: '#bdbdbd', 
+                    fontWeight: 400, 
+                    fontSize: { xs: '0.9rem', sm: '0.95rem', md: '1.01rem' }, 
+                    lineHeight: 1.5 
+                  }}>
                     Our AI creates engaging content tailored for Reddit, Twitter, LinkedIn, Instagram, and Email marketing.
                   </Typography>
                 </Paper>
@@ -283,8 +299,8 @@ export default function Home() {
               
               <Box sx={{
                 position: 'relative',
-                width: 400,
-                height: 300,
+                width: { xs: '100%', sm: 350, md: 400 },
+                height: { xs: 250, sm: 280, md: 300 },
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -305,8 +321,8 @@ export default function Home() {
                   flexDirection: 'column',
                   alignItems: 'flex-start',
                   justifyContent: 'flex-start',
-                  px: 3,
-                  pt: 3,
+                  px: { xs: 2, sm: 2.5, md: 3 },
+                  pt: { xs: 2, sm: 2.5, md: 3 },
                   pb: 2,
                   '&:hover': {
                     border: '1px solid rgba(0,255,255,0.8)',
@@ -314,13 +330,13 @@ export default function Home() {
                   }
                 }}>
                   <Box sx={{
-                    width: 32,
-                    height: 32,
+                    width: { xs: 28, sm: 30, md: 32 },
+                    height: { xs: 28, sm: 30, md: 32 },
                     borderRadius: '8px',
                     bgcolor: '#0A0A0A',
                     color: '#00FFFF',
                     fontWeight: 700,
-                    fontSize: '1.1rem',
+                    fontSize: { xs: '1rem', sm: '1.05rem', md: '1.1rem' },
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -331,7 +347,7 @@ export default function Home() {
                   <Typography sx={{ 
                     color: '#FFFFFF', 
                     fontWeight: 700, 
-                    fontSize: '1.13rem', 
+                    fontSize: { xs: '1rem', sm: '1.1rem', md: '1.13rem' }, 
                     mb: 1
                   }}>
                     Copy and paste to your platforms
@@ -339,7 +355,7 @@ export default function Home() {
                   <Typography sx={{ 
                     color: '#00FFFF', 
                     fontWeight: 400, 
-                    fontSize: '1.01rem', 
+                    fontSize: { xs: '0.9rem', sm: '0.95rem', md: '1.01rem' }, 
                     lineHeight: 1.5
                   }}>
                     Copy the generated content and paste it directly to your chosen platforms. No automation, just great content.
@@ -658,7 +674,11 @@ export default function Home() {
 
 
       <Footer />
-      <SignupLoginModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      <SignupLoginModal 
+        open={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        initialMode={modalMode}
+      />
     </Box>
   )
 }
