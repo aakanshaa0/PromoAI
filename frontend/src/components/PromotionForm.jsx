@@ -58,7 +58,7 @@ export default function PromotionForm({ onSubmit, isSubmitting }) {
 
   return (
     <Paper elevation={6} sx={{
-      p: 4,
+      p: { xs: 2, sm: 3, md: 4 },
       borderRadius: '8px',
       width: '100%',
       background: '#1A1A1A',
@@ -81,12 +81,13 @@ export default function PromotionForm({ onSubmit, isSubmitting }) {
         zIndex: 0 
       }} />
       <form onSubmit={handleSubmit} style={{ position: 'relative', zIndex: 1 }}>
-        <Stack spacing={3}>
+        <Stack spacing={{ xs: 2, sm: 2.5, md: 3 }}>
           <Typography variant="h5" sx={{ 
             fontWeight: 700, 
             color: '#00FFFF', 
             mb: 1, 
-            textShadow: '0 0 10px #00FFFF, 0 0 20px #00FFFF'
+            textShadow: '0 0 10px #00FFFF, 0 0 20px #00FFFF',
+            fontSize: { xs: '1.3rem', sm: '1.4rem', md: '1.5rem' }
           }}>
             Product Details
           </Typography>

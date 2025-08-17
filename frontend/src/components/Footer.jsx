@@ -11,8 +11,8 @@ export default function Footer() {
     <Box
       component="footer"
       sx={{
-        py: 2,
-        px: 2,
+        py: { xs: 1.5, sm: 2 },
+        px: { xs: 1, sm: 2 },
         mt: 'auto',
         background: 'linear-gradient(90deg, #00FFFF 0%, #0080FF 100%)',
         borderTop: '3px solid #00FFFF',
@@ -33,11 +33,11 @@ export default function Footer() {
     >
       <Container maxWidth="lg">
         <Stack 
-          direction="row" 
-          spacing={6} 
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={{ xs: 2, sm: 4, md: 6 }} 
           justifyContent="center" 
           alignItems="center"
-          sx={{ flexWrap: 'wrap', gap: 4 }}
+          sx={{ flexWrap: 'wrap', gap: { xs: 2, sm: 4 } }}
         >
           <Stack direction="row" spacing={1}>
 
@@ -49,6 +49,7 @@ export default function Footer() {
               sx={{
                 color: '#FFFFFF',
                 border: '1px solid rgba(255,255,255,0.3)',
+                p: { xs: 1, sm: 1.5 },
                 '&:hover': {
                   background: 'rgba(255,255,255,0.1)',
                   border: '1px solid rgba(255,255,255,0.8)',
@@ -57,7 +58,7 @@ export default function Footer() {
                 }
               }}
             >
-              <LinkedInIcon />
+              <LinkedInIcon sx={{ fontSize: { xs: 20, sm: 24 } }} />
             </IconButton>
             <IconButton 
               href="https://github.com" 
@@ -66,6 +67,7 @@ export default function Footer() {
               sx={{
                 color: '#FFFFFF',
                 border: '1px solid rgba(255,255,255,0.3)',
+                p: { xs: 1, sm: 1.5 },
                 '&:hover': {
                   background: 'rgba(255,255,255,0.1)',
                   border: '1px solid rgba(255,255,255,0.8)',
@@ -74,7 +76,7 @@ export default function Footer() {
                 }
               }}
             >
-              <GitHubIcon />
+              <GitHubIcon sx={{ fontSize: { xs: 20, sm: 24 } }} />
             </IconButton>
             <IconButton 
               href="https://mail.google.com/mail/u/3/#inbox?compose=CllgCJlKFhMfRnGwgNNPzgVPtgqmSJRcqHHFhSrLkwRXcGVffDQjqczgVZpKVKgSZXjgbQzsrHL" 
@@ -83,6 +85,7 @@ export default function Footer() {
               sx={{
                 color: '#FFFFFF',
                 border: '1px solid rgba(255,255,255,0.3)',
+                p: { xs: 1, sm: 1.5 },
                 '&:hover': {
                   background: 'rgba(255,255,255,0.1)',
                   border: '1px solid rgba(255,255,255,0.8)',
@@ -91,15 +94,15 @@ export default function Footer() {
                 }
               }}
             >
-              <EmailIcon />
+              <EmailIcon sx={{ fontSize: { xs: 20, sm: 24 } }} />
             </IconButton>
           </Stack>
 
           <Box sx={{ 
-            width: '1px', 
-            height: '24px', 
+            width: { xs: '80%', sm: '1px' }, 
+            height: { xs: '1px', sm: '24px' }, 
             background: 'rgba(255,255,255,0.3)',
-            mx: 2
+            mx: { xs: 0, sm: 2 }
           }} />
 
           <Typography variant="body2" sx={{
@@ -107,11 +110,13 @@ export default function Footer() {
             display: 'flex',
             alignItems: 'center',
             gap: 0.5,
-            fontWeight: 500
+            fontWeight: 500,
+            fontSize: { xs: '0.8rem', sm: '0.875rem' },
+            textAlign: 'center'
           }}>
             Made with 
             <FavoriteIcon sx={{ 
-              fontSize: 16, 
+              fontSize: { xs: 14, sm: 16 }, 
               color: '#FF00FF',
               filter: 'drop-shadow(0 0 3px #FF00FF)',
               animation: 'pulse 1.5s ease-in-out infinite'

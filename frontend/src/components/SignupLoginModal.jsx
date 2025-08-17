@@ -68,7 +68,11 @@ export default function SignupLoginModal({ open, onClose }) {
           transition: 'backdrop-filter 0.3s',
         }} />
       )}
-      <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth
+      <Dialog 
+        open={open} 
+        onClose={onClose} 
+        maxWidth="xs" 
+        fullWidth
         PaperProps={{
           sx: {
             background: '#1A1A1A',
@@ -76,6 +80,9 @@ export default function SignupLoginModal({ open, onClose }) {
             borderRadius: '8px',
             border: '2px solid #00FFFF',
             boxShadow: '0 0 30px rgba(0,255,255,0.5)',
+            margin: { xs: 2, sm: 'auto' },
+            width: { xs: 'calc(100vw - 32px)', sm: 'auto' },
+            maxWidth: { xs: 'none', sm: '400px' },
             '&:hover': {
               boxShadow: '0 0 40px rgba(0,255,255,0.7)',
             }
@@ -89,7 +96,10 @@ export default function SignupLoginModal({ open, onClose }) {
           fontWeight: 700, 
           color: '#00FFFF', 
           background: 'transparent',
-          textShadow: '0 0 10px #00FFFF, 0 0 20px #00FFFF'
+          textShadow: '0 0 10px #00FFFF, 0 0 20px #00FFFF',
+          fontSize: { xs: '1.1rem', sm: '1.25rem' },
+          px: { xs: 2, sm: 3 },
+          py: { xs: 2, sm: 2.5 }
         }}>
           {mode === 'login' ? 'Login to PromoAI' : 'Sign up for PromoAI'}
           <IconButton 

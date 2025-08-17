@@ -117,21 +117,27 @@ export default function Dashboard() {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#0A0A0A' }}>
         <Navbar />
-        <Container maxWidth="lg" sx={{ py: 8, flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Container maxWidth="lg" sx={{ py: { xs: 4, sm: 6, md: 8 }, flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Paper sx={{ 
-            p: 4, 
+            p: { xs: 3, sm: 4 }, 
             textAlign: 'center',
             background: '#1A1A1A',
             border: '2px solid #00FFFF',
-            boxShadow: '0 0 30px rgba(0,255,255,0.3)'
+            boxShadow: '0 0 30px rgba(0,255,255,0.3)',
+            mx: { xs: 2, sm: 0 }
           }}>
             <Typography variant="h4" sx={{ 
               color: '#00FFFF',
-              mb: 2
+              mb: 2,
+              fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' }
             }}>
               Access Denied
             </Typography>
-            <Typography variant="body1" sx={{ color: '#FFFFFF', mb: 3 }}>
+            <Typography variant="body1" sx={{ 
+              color: '#FFFFFF', 
+              mb: 3,
+              fontSize: { xs: '0.9rem', sm: '1rem' }
+            }}>
               Please log in to access your dashboard.
             </Typography>
             <Button
@@ -142,6 +148,9 @@ export default function Dashboard() {
                 background: 'linear-gradient(45deg, #00FFFF, #0080FF)',
                 border: '2px solid #00FFFF',
                 boxShadow: '0 0 15px rgba(0,255,255,0.5)',
+                px: { xs: 3, sm: 4 },
+                py: { xs: 1, sm: 1.5 },
+                fontSize: { xs: '0.9rem', sm: '1rem' },
                 '&:hover': {
                   background: 'linear-gradient(45deg, #0080FF, #00FFFF)',
                   boxShadow: '0 0 25px rgba(0,255,255,0.8)',

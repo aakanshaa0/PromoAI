@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, Button, Container, Box, IconButton, Stack, Drawer, List, ListItem, ListItemButton, ListItemText } from '@mui/material'
+import { AppBar, Toolbar, Typography, Button, Container, Box, IconButton, Stack, Drawer, List, ListItem, ListItemButton, ListItemText, Divider } from '@mui/material'
 import { Link, useLocation } from 'react-router-dom'
 import AccountTreeSharpIcon from '@mui/icons-material/AccountTreeSharp'
 import PersonIcon from '@mui/icons-material/Person'
@@ -22,9 +22,9 @@ export default function Navbar() {
       '& .MuiAppBar-root': { boxShadow: 'none' },
     }}>
       <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{ minHeight: 72 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
-            <AccountTreeSharpIcon sx={{ fontSize: 36, color: '#00FFFF', mr: 1 }} />
+        <Toolbar disableGutters sx={{ minHeight: { xs: 64, md: 72 } }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mr: { xs: 2, md: 4 } }}>
+            <AccountTreeSharpIcon sx={{ fontSize: { xs: 28, sm: 32, md: 36 }, color: '#00FFFF', mr: 1 }} />
             <Typography
               variant="h6"
               noWrap
@@ -36,7 +36,7 @@ export default function Navbar() {
                 letterSpacing: '.1rem',
                 color: '#00FFFF',
                 textDecoration: 'none',
-                fontSize: '1.6rem',
+                fontSize: { xs: '1.2rem', sm: '1.4rem', md: '1.6rem' },
                 textShadow: 'none',
                 '&:hover': { color: '#00FFFF' }
               }}
@@ -144,46 +144,193 @@ export default function Navbar() {
               color="inherit"
               aria-label="menu"
               onClick={() => setDrawerOpen(true)}
+              sx={{ p: 1 }}
             >
-              <MenuIcon />
+              <MenuIcon sx={{ fontSize: { xs: 24, sm: 28 } }} />
             </IconButton>
             <Drawer
               anchor="right"
               open={drawerOpen}
               onClose={() => setDrawerOpen(false)}
+              PaperProps={{
+                sx: {
+                  width: { xs: '85vw', sm: 280 },
+                  background: '#0A0A0A',
+                  height: '100%',
+                  borderLeft: '1px solid rgba(0,255,255,0.3)',
+                }
+              }}
             >
-              <List sx={{ width: 250, background: '#0A0A0A', height: '100%' }}>
-                <ListItem disablePadding>
-                  <ListItemButton component="a" href="/#how-it-works" onClick={() => setDrawerOpen(false)}>
-                    <ListItemText primary="How It Works" sx={{ color: '#00FFFF', textAlign: 'center' }} />
+              <List sx={{ 
+                width: '100%', 
+                background: '#0A0A0A', 
+                height: '100%',
+                pt: 2
+              }}>
+                <ListItem disablePadding sx={{ mb: 1 }}>
+                  <ListItemButton 
+                    component="a" 
+                    href="/#how-it-works" 
+                    onClick={() => setDrawerOpen(false)}
+                    sx={{ 
+                      mx: 2, 
+                      borderRadius: 2,
+                      '&:hover': {
+                        background: 'rgba(0,255,255,0.1)',
+                        border: '1px solid rgba(0,255,255,0.3)',
+                      }
+                    }}
+                  >
+                    <ListItemText 
+                      primary="How It Works" 
+                      sx={{ 
+                        color: '#00FFFF', 
+                        textAlign: 'center',
+                        '& .MuiTypography-root': {
+                          fontSize: { xs: '1rem', sm: '1.1rem' },
+                          fontWeight: 600
+                        }
+                      }} 
+                    />
                   </ListItemButton>
                 </ListItem>
-                <ListItem disablePadding>
-                  <ListItemButton component="a" href="/#platforms" onClick={() => setDrawerOpen(false)}>
-                    <ListItemText primary="Platforms" sx={{ color: '#00FFFF', textAlign: 'center' }} />
+                <ListItem disablePadding sx={{ mb: 1 }}>
+                  <ListItemButton 
+                    component="a" 
+                    href="/#platforms" 
+                    onClick={() => setDrawerOpen(false)}
+                    sx={{ 
+                      mx: 2, 
+                      borderRadius: 2,
+                      '&:hover': {
+                        background: 'rgba(0,255,255,0.1)',
+                        border: '1px solid rgba(0,255,255,0.3)',
+                      }
+                    }}
+                  >
+                    <ListItemText 
+                      primary="Platforms" 
+                      sx={{ 
+                        color: '#00FFFF', 
+                        textAlign: 'center',
+                        '& .MuiTypography-root': {
+                          fontSize: { xs: '1rem', sm: '1.1rem' },
+                          fontWeight: 600
+                        }
+                      }} 
+                    />
                   </ListItemButton>
                 </ListItem>
-                <ListItem disablePadding>
-                  <ListItemButton component="a" href="/#testimonials" onClick={() => setDrawerOpen(false)}>
-                    <ListItemText primary="Testimonials" sx={{ color: '#00FFFF', textAlign: 'center' }} />
+                <ListItem disablePadding sx={{ mb: 1 }}>
+                  <ListItemButton 
+                    component="a" 
+                    href="/#testimonials" 
+                    onClick={() => setDrawerOpen(false)}
+                    sx={{ 
+                      mx: 2, 
+                      borderRadius: 2,
+                      '&:hover': {
+                        background: 'rgba(0,255,255,0.1)',
+                        border: '1px solid rgba(0,255,255,0.3)',
+                      }
+                    }}
+                  >
+                    <ListItemText 
+                      primary="Testimonials" 
+                      sx={{ 
+                        color: '#00FFFF', 
+                        textAlign: 'center',
+                        '& .MuiTypography-root': {
+                          fontSize: { xs: '1rem', sm: '1.1rem' },
+                          fontWeight: 600
+                        }
+                      }} 
+                    />
                   </ListItemButton>
                 </ListItem>
-                <ListItem disablePadding>
-                  <ListItemButton component="a" href="/#faq" onClick={() => setDrawerOpen(false)}>
-                    <ListItemText primary="FAQ" sx={{ color: '#00FFFF', textAlign: 'center' }} />
+                <ListItem disablePadding sx={{ mb: 1 }}>
+                  <ListItemButton 
+                    component="a" 
+                    href="/#faq" 
+                    onClick={() => setDrawerOpen(false)}
+                    sx={{ 
+                      mx: 2, 
+                      borderRadius: 2,
+                      '&:hover': {
+                        background: 'rgba(0,255,255,0.1)',
+                        border: '1px solid rgba(0,255,255,0.3)',
+                      }
+                    }}
+                  >
+                    <ListItemText 
+                      primary="FAQ" 
+                      sx={{ 
+                        color: '#00FFFF', 
+                        textAlign: 'center',
+                        '& .MuiTypography-root': {
+                          fontSize: { xs: '1rem', sm: '1.1rem' },
+                          fontWeight: 600
+                        }
+                      }} 
+                    />
                   </ListItemButton>
                 </ListItem>
+                <Divider sx={{ my: 2, borderColor: 'rgba(0,255,255,0.3)' }} />
                 <ListItem disablePadding>
                   {isLoggedIn ? (
-                    <ListItemButton component={Link} to="/dashboard" onClick={() => setDrawerOpen(false)}>
-                      <ListItemText primary="Dashboard" sx={{ color: '#00FF00', textAlign: 'center' }} />
+                    <ListItemButton 
+                      component={Link} 
+                      to="/dashboard" 
+                      onClick={() => setDrawerOpen(false)}
+                      sx={{ 
+                        mx: 2, 
+                        borderRadius: 2,
+                        background: 'rgba(0,255,0,0.1)',
+                        border: '1px solid rgba(0,255,0,0.3)',
+                        '&:hover': {
+                          background: 'rgba(0,255,0,0.2)',
+                          border: '1px solid rgba(0,255,0,0.6)',
+                        }
+                      }}
+                    >
+                      <ListItemText 
+                        primary="Dashboard" 
+                        sx={{ 
+                          color: '#00FF00', 
+                          textAlign: 'center',
+                          '& .MuiTypography-root': {
+                            fontSize: { xs: '1rem', sm: '1.1rem' },
+                            fontWeight: 600
+                          }
+                        }} 
+                      />
                     </ListItemButton>
                   ) : (
-                    <>
-                      <ListItemButton onClick={() => { setModalOpen(true); setDrawerOpen(false) }}>
-                        <ListItemText primary="Login / Signup" sx={{ color: '#00FFFF', textAlign: 'center' }} />
-                      </ListItemButton>
-                    </>
+                    <ListItemButton 
+                      onClick={() => { setModalOpen(true); setDrawerOpen(false) }}
+                      sx={{ 
+                        mx: 2, 
+                        borderRadius: 2,
+                        background: 'rgba(0,255,255,0.1)',
+                        border: '1px solid rgba(0,255,255,0.3)',
+                        '&:hover': {
+                          background: 'rgba(0,255,255,0.2)',
+                          border: '1px solid rgba(0,255,255,0.6)',
+                        }
+                      }}
+                    >
+                      <ListItemText 
+                        primary="Login / Signup" 
+                        sx={{ 
+                          color: '#00FFFF', 
+                          textAlign: 'center',
+                          '& .MuiTypography-root': {
+                            fontSize: { xs: '1rem', sm: '1.1rem' },
+                            fontWeight: 600
+                          }
+                        }} 
+                      />
+                    </ListItemButton>
                   )}
                 </ListItem>
               </List>

@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Promote from './pages/Promote'
 import Dashboard from './pages/Dashboard'
-
+import { Analytics } from "@vercel/analytics/next"
 
 function App() {
   return (
@@ -15,6 +15,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
 
       </Routes>
+      <Analytics /> 
     </>
   )
 }

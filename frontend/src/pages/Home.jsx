@@ -47,9 +47,10 @@ export default function Home() {
                 }}>
                   <Typography variant="h1" component="h1" gutterBottom sx={{ 
                     fontWeight: 900, 
-                    fontSize: { xs: '2.3rem', sm: '3rem', md: '3.5rem' }, 
+                    fontSize: { xs: '2rem', sm: '2.5rem', md: '3.5rem' }, 
                     lineHeight: 1.1,
-                    color: '#FFFFFF'
+                    color: '#FFFFFF',
+                    mb: { xs: 2, md: 3 }
                   }}>
                     Let AI Promote For you<br />
                     <Box component="span" sx={{ 
@@ -57,9 +58,10 @@ export default function Home() {
                     }}>using PromoAI</Box>
                   </Typography>
                   <Typography variant="h5" sx={{ 
-                    mb: 4, 
+                    mb: { xs: 3, md: 4 }, 
                     color: '#00FFFF', 
-                    fontSize: { xs: '1.05rem', md: '1.2rem' }
+                    fontSize: { xs: '0.95rem', sm: '1.05rem', md: '1.2rem' },
+                    px: { xs: 1, md: 0 }
                   }}>
                     Create engaging promotional content for Reddit, Twitter, LinkedIn, Instagram, and Email in seconds.
                   </Typography>
@@ -67,9 +69,9 @@ export default function Home() {
                     variant="contained"
                     size="large"
                     sx={{
-                      px: 5,
-                      py: 1.5,
-                      fontSize: '1.25rem',
+                      px: { xs: 3, sm: 4, md: 5 },
+                      py: { xs: 1.2, md: 1.5 },
+                      fontSize: { xs: '1.1rem', sm: '1.2rem', md: '1.25rem' },
                       textTransform: 'none',
                       borderRadius: '8px',
                       background: 'linear-gradient(45deg, #00FFFF, #0080FF)',
@@ -78,6 +80,8 @@ export default function Home() {
                       border: '2px solid #00FFFF',
                       boxShadow: '0 0 20px rgba(0,255,255,0.6)',
                       transition: 'all 0.3s ease',
+                      width: { xs: '100%', sm: 'auto' },
+                      maxWidth: { xs: 280, sm: 'none' },
                       '&:hover': {
                         transform: 'translateY(-3px) scale(1.02)',
                         boxShadow: '0 0 30px rgba(0,255,255,0.9)',
@@ -143,12 +147,13 @@ export default function Home() {
         </Box>
 
         {theme.palette.mode === 'dark' && (
-          <Container maxWidth="lg" sx={{ py: { xs: 6, md: 8 } }} id="how-it-works">
+          <Container maxWidth="lg" sx={{ py: { xs: 4, sm: 6, md: 8 } }} id="how-it-works">
             <Typography variant="h4" align="center" gutterBottom sx={{ 
               fontWeight: 800, 
-              fontSize: { xs: '2.1rem', md: '2.5rem' }, 
+              fontSize: { xs: '1.8rem', sm: '2.1rem', md: '2.5rem' }, 
               color: '#00FFFF', 
-              mb: 6
+              mb: { xs: 4, md: 6 },
+              px: { xs: 2, md: 0 }
             }}>
               How it works
             </Typography>
@@ -157,13 +162,13 @@ export default function Home() {
               flexDirection: { xs: 'column', md: 'row' },
               justifyContent: 'center',
               alignItems: 'center',
-              gap: { xs: 4, md: 8 },
+              gap: { xs: 3, sm: 4, md: 8 },
               mt: 2,
             }}>
               <Box sx={{
                 position: 'relative',
-                width: 400,
-                height: 300,
+                width: { xs: '100%', sm: 350, md: 400 },
+                height: { xs: 250, sm: 280, md: 300 },
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -184,8 +189,8 @@ export default function Home() {
                   flexDirection: 'column',
                   alignItems: 'flex-start',
                   justifyContent: 'flex-start',
-                  px: 3,
-                  pt: 3,
+                  px: { xs: 2, sm: 2.5, md: 3 },
+                  pt: { xs: 2, sm: 2.5, md: 3 },
                   pb: 2,
                   '&:hover': {
                     border: '1px solid rgba(0,255,255,0.8)',
@@ -193,13 +198,13 @@ export default function Home() {
                   }
                 }}>
                   <Box sx={{
-                    width: 32,
-                    height: 32,
+                    width: { xs: 28, sm: 30, md: 32 },
+                    height: { xs: 28, sm: 30, md: 32 },
                     borderRadius: '8px',
                     bgcolor: '#0A0A0A',
                     color: '#00FFFF',
                     fontWeight: 700,
-                    fontSize: '1.1rem',
+                    fontSize: { xs: '1rem', sm: '1.05rem', md: '1.1rem' },
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -210,7 +215,7 @@ export default function Home() {
                   <Typography sx={{ 
                     color: '#FFFFFF', 
                     fontWeight: 700, 
-                    fontSize: '1.13rem', 
+                    fontSize: { xs: '1rem', sm: '1.1rem', md: '1.13rem' }, 
                     mb: 1
                   }}>
                     Describe your product or service
@@ -218,7 +223,7 @@ export default function Home() {
                   <Typography sx={{ 
                     color: '#00FFFF', 
                     fontWeight: 400, 
-                    fontSize: '1.01rem', 
+                    fontSize: { xs: '0.9rem', sm: '0.95rem', md: '1.01rem' }, 
                     lineHeight: 1.5
                   }}>
                     Enter your product details, target audience, and categories. Our AI will understand your needs.
